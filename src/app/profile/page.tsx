@@ -1,7 +1,7 @@
 // app/profile/page.tsx
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
-
+import { TESTS } from '@/data/tests'
 interface ProfileData {
   user_id: string
   user_email: string
@@ -38,10 +38,10 @@ export default async function ProfilePage() {
       id,
       result_text,
       created_at,
-      test_id (name)
+      test_id 
     `)
     .eq('user_id', user.id)
-
+      console.log('Results:', results)
   if (resultsError) redirect('/error')
 
   // Преобразование результатов
@@ -49,7 +49,7 @@ export default async function ProfilePage() {
     id: result.id,
     result_text: result.result_text,
     created_at: result.created_at,
-    test_name: (result.test_id as { name: string } | null)?.name || null
+    test_name: TESTS.find (t => t.id === result.test_id)?.title || null
   }))
 
   return (

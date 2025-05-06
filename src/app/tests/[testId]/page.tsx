@@ -7,8 +7,9 @@ export default async function TestPage({
 }: {
   params: { testId: string }
 }) {
-  const test = TESTS.find(t => t.id === params.testId)
-  
+  //const test = TESTS.find(t => t.id === params.testId)
+  const { testId } = await params
+  const test = TESTS.find(t => t.id === testId)
   if (!test) {
     redirect('/')
   }
