@@ -1,3 +1,4 @@
+//app/tests/[testId]/page.tsx
 import { TestComponent } from '@/components/TestComponent'
 import { TESTS } from '@/data/tests'
 import { redirect } from 'next/navigation'

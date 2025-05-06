@@ -1,3 +1,4 @@
+//src/types/index.ts
 export interface Test {
     id: string
     title: string
