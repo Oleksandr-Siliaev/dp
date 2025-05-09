@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/utils/supabase/client'
-import { Test } from '@/types'
+import { TestDetails } from '@/types'
 import { User } from '@supabase/supabase-js'
 
 const Progress = ({ current, total }: { current: number; total: number }) => (
@@ -21,7 +21,7 @@ const Progress = ({ current, total }: { current: number; total: number }) => (
   </div>
 )
 
-export function TestComponent({ test }: { test: Test }) {
+export function TestComponent({ test }: { test: TestDetails }) {
   const supabase = createClient()
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [answers, setAnswers] = useState<number[]>([])
@@ -46,12 +46,16 @@ export function TestComponent({ test }: { test: Test }) {
   const calculateResult = async () => {
     // Вычисляем общий балл
     const totalScore = test.questions.reduce((acc, question, index) => {
-      return acc + question.answers[answers[index]]?.score || 0
+      const answerIndex = answers[index]
+      const score = question.answers[answerIndex]?.score ?? 0 // Добавляем проверку через ??
+      return acc + score
     }, 0)
 
     // Формируем текстовый результат
-    const maxPossibleScore = test.questions.reduce((acc, q) => 
-      acc + Math.max(...q.answers.map(a => a.score)), 0)
+    const maxPossibleScore = test.questions.reduce((acc, q) => {
+      const scores = q.answers.map(a => a.score ?? 0) // Фильтруем undefined
+      return acc + Math.max(...scores)
+    }, 0)
     
     const resultText = `Тест "${test.title}": ${totalScore}/${maxPossibleScore} баллов`
 

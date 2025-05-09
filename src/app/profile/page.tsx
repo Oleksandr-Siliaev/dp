@@ -1,7 +1,7 @@
 // app/profile/page.tsx
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
-import { TESTS } from '@/data/tests'
+import { TESTS } from '@/app/api/tests/data/tests'
 interface ProfileData {
   user_id: string
   user_email: string

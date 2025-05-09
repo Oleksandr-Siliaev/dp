@@ -1,6 +1,6 @@
 //app/tests/[testId]/page.tsx
 import { TestComponent } from '@/components/TestComponent'
-import { TESTS } from '@/data/tests'
+import { TESTS } from '@/app/api/tests/data/tests'
 import { redirect } from 'next/navigation'
 
 export default async function TestPage({

@@ -1,11 +1,12 @@
 //src/data/tests.ts
-import { Test } from '@/types'
+import { TestDetails } from '@/types'
 
-export const TESTS: Test[] = [
+export const TESTS: TestDetails[] = [
   {
     id: 'depression-test',
     title: 'Тест на депрессию',
     description: 'Оценка эмоционального состояния',
+    questionsCount: 5, // Добавляем новое поле
     questions: [
       {
         id: 1,
@@ -57,6 +58,7 @@ export const TESTS: Test[] = [
     id: 'anxiety-test',
     title: 'Тест на тревожность',
     description: 'Оценка эмоционального состояния',
+    questionsCount: 5,
     questions: [
       {
         id: 1,
