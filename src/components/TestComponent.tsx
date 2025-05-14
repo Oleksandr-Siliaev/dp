@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { TestDetails } from '@/types'
 import { User } from '@supabase/supabase-js'
+import Link from 'next/link';
 
 const Progress = ({ current, total }: { current: number; total: number }) => (
   <div className="mb-4">
@@ -45,21 +46,22 @@ export function TestComponent({ test }: { test: TestDetails }) {
 
   const calculateResult = async () => {
     // Вычисляем общий балл
-    const totalScore = test.questions.reduce((acc, question, index) => {
+const totalScore = test.questions.reduce((acc, question, index) => {
       const answerIndex = answers[index]
-      const score = question.answers[answerIndex]?.score ?? 0 // Добавляем проверку через ??
+      const score = question.answers[answerIndex]?.score ?? 0
       return acc + score
     }, 0)
 
-    // Формируем текстовый результат
-    const maxPossibleScore = test.questions.reduce((acc, q) => {
-      const scores = q.answers.map(a => a.score ?? 0) // Фильтруем undefined
+       const maxPossibleScore = test.questions.reduce((acc, q) => {
+      const scores = q.answers.map(a => a.score ?? 0)
       return acc + Math.max(...scores)
     }, 0)
     
-    const resultText = `Тест "${test.title}": ${totalScore}/${maxPossibleScore} баллов`
+    const resultText = ` "${test.title}": ${totalScore}/${maxPossibleScore} баллов`
 
-    // Сохраняем результат
+     setResult(resultText)
+
+ // Сохраняем результат ТОЛЬКО для авторизованных
     if (user) {
       setLoading(true)
       try {
@@ -67,28 +69,41 @@ export function TestComponent({ test }: { test: TestDetails }) {
           .from('test_results')
           .insert({
             user_id: user.id,
-            test_id: test.id, // Используем ID из таблицы tests
+            test_id: test.id,
             result_text: resultText
           })
 
         if (error) throw error
-        setResult(resultText)
       } catch (error) {
         console.error('Ошибка сохранения:', error)
         alert('Не удалось сохранить результат')
       } finally {
         setLoading(false)
       }
-    } else {
-      setResult(resultText)
     }
   }
 
+  // Блок отображения результата
   if (result !== null) {
     return (
       <div className="text-center">
         <h2 className="text-2xl font-bold mb-4">Результат теста</h2>
         <p className="mb-6">{result}</p>
+        
+        {!user && (
+          <div className="mb-4 p-3 bg-yellow-100 rounded-lg">
+            <span className="text-yellow-800">
+              Для сохранения результатов необходимо 
+              <Link 
+                href="/login" 
+                className="ml-1 text-blue-600 hover:underline"
+              >
+                войти в систему
+              </Link>
+            </span>
+          </div>
+        )}
+
         <button 
           onClick={() => window.location.href = '/'}
           className="bg-blue-500 text-white px-4 py-2 rounded"
