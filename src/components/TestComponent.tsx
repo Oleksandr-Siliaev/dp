@@ -1,11 +1,11 @@
-//src/components/TestComponent.tsx
 'use client'
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { TestDetails } from '@/types'
 import { User } from '@supabase/supabase-js'
-import Link from 'next/link';
+import Link from 'next/link'
+import { getResultRule } from '@/lib/test-results'
 
 const Progress = ({ current, total }: { current: number; total: number }) => (
   <div className="mb-4">
@@ -26,7 +26,10 @@ export function TestComponent({ test }: { test: TestDetails }) {
   const supabase = createClient()
   const [currentQuestion, setCurrentQuestion] = useState(0)
   const [answers, setAnswers] = useState<number[]>([])
-  const [result, setResult] = useState<string | null>(null)
+  const [result, setResult] = useState<{
+    score: number
+    rule: ReturnType<typeof getResultRule>
+  } | null>(null)
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -45,23 +48,15 @@ export function TestComponent({ test }: { test: TestDetails }) {
   }
 
   const calculateResult = async () => {
-    // Вычисляем общий балл
-const totalScore = test.questions.reduce((acc, question, index) => {
+    const totalScore = test.questions.reduce((acc, question, index) => {
       const answerIndex = answers[index]
       const score = question.answers[answerIndex]?.score ?? 0
       return acc + score
     }, 0)
 
-       const maxPossibleScore = test.questions.reduce((acc, q) => {
-      const scores = q.answers.map(a => a.score ?? 0)
-      return acc + Math.max(...scores)
-    }, 0)
-    
-    const resultText = ` "${test.title}": ${totalScore}/${maxPossibleScore} баллов`
+    const rule = getResultRule(test.id, totalScore)
+    setResult({ score: totalScore, rule })
 
-     setResult(resultText)
-
- // Сохраняем результат ТОЛЬКО для авторизованных
     if (user) {
       setLoading(true)
       try {
@@ -70,7 +65,7 @@ const totalScore = test.questions.reduce((acc, question, index) => {
           .insert({
             user_id: user.id,
             test_id: test.id,
-            result_text: resultText
+            score: totalScore
           })
 
         if (error) throw error
@@ -83,13 +78,25 @@ const totalScore = test.questions.reduce((acc, question, index) => {
     }
   }
 
-  // Блок отображения результата
   if (result !== null) {
     return (
       <div className="text-center">
         <h2 className="text-2xl font-bold mb-4">Результат теста</h2>
-        <p className="mb-6">{result}</p>
-        
+        <div className="mb-6">
+          <h3 className="text-lg font-semibold">{result.rule.title}</h3>
+          <p className="mt-2 text-gray-600">{result.rule.description}</p>
+          {result.rule.recommendations?.length > 0 && (
+            <div className="mt-4 text-left max-w-md mx-auto">
+              <h4 className="font-medium mb-2">Рекомендации:</h4>
+              <ul className="list-disc pl-5 space-y-1">
+                {result.rule.recommendations.map((rec, i) => (
+                  <li key={i} className="text-sm text-gray-700">{rec}</li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+
         {!user && (
           <div className="mb-4 p-3 bg-yellow-100 rounded-lg">
             <span className="text-yellow-800">
@@ -106,7 +113,7 @@ const totalScore = test.questions.reduce((acc, question, index) => {
 
         <button 
           onClick={() => window.location.href = '/'}
-          className="bg-blue-500 text-white px-4 py-2 rounded"
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
         >
           На главную
         </button>
@@ -130,10 +137,10 @@ const totalScore = test.questions.reduce((acc, question, index) => {
           <button
             key={answer.id}
             onClick={() => handleAnswer(idx)}
-            className={`block w-full p-2 text-left rounded ${
+            className={`block w-full p-2 text-left rounded border transition-all ${
               answers[currentQuestion] === idx 
-                ? 'bg-blue-100 border-blue-500' 
-                : 'hover:bg-gray-50'
+                ? 'bg-blue-100 border-blue-500 scale-[0.98]' 
+                : 'hover:bg-gray-50 border-transparent'
             }`}
           >
             {answer.text}
@@ -145,7 +152,7 @@ const totalScore = test.questions.reduce((acc, question, index) => {
         {currentQuestion > 0 && (
           <button
             onClick={() => setCurrentQuestion(prev => prev - 1)}
-            className="bg-gray-200 px-4 py-2 rounded"
+            className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300 transition-colors"
           >
             Назад
           </button>
@@ -159,15 +166,15 @@ const totalScore = test.questions.reduce((acc, question, index) => {
               calculateResult()
             }
           }}
-          className="bg-blue-500 text-white px-4 py-2 rounded"
+          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors ml-auto"
           disabled={loading}
         >
           {loading ? (
             <span className="animate-pulse">Сохранение...</span>
           ) : currentQuestion < test.questions.length - 1 ? (
-            'Далее'
+            'Далее →'
           ) : (
-            'Завершить'
+            'Завершить тест'
           )}
         </button>
       </div>

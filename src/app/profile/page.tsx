@@ -1,7 +1,8 @@
 // app/profile/page.tsx
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
-import { TESTS } from '@/app/api/tests/data/tests'
+import { getTestConfig, getResultRule } from '@/lib/test-results'
+
 interface ProfileData {
   user_id: string
   user_email: string
@@ -10,9 +11,15 @@ interface ProfileData {
 
 interface TestResult {
   id: string
-  result_text: string
+  test_id: string
+  score: number
   created_at: string
-  test_name: string | null
+  test_title: string
+  result_rule: {
+    title: string
+    description: string
+    recommendations: string[]
+  }
 }
 
 export default async function ProfilePage() {
@@ -31,26 +38,49 @@ export default async function ProfilePage() {
 
   if (profileError) redirect('/error')
 
-  // Запрос результатов с явным JOIN
+  // Запрос результатов тестов
   const { data: results, error: resultsError } = await supabase
     .from('test_results')
-    .select(`
-      id,
-      result_text,
-      created_at,
-      test_id 
-    `)
+    .select('id, test_id, score, created_at')
     .eq('user_id', user.id)
-      console.log('Results:', results)
+    .order('created_at', { ascending: false })
+
   if (resultsError) redirect('/error')
 
-  // Преобразование результатов
-  const formattedResults: TestResult[] = (results || []).map(result => ({
-    id: result.id,
-    result_text: result.result_text,
-    created_at: result.created_at,
-    test_name: TESTS.find (t => t.id === result.test_id)?.title || null
-  }))
+  // Обработка и преобразование результатов
+  const formattedResults = results?.map(result => {
+    try {
+      const config = getTestConfig(result.test_id)
+      const rule = getResultRule(result.test_id, result.score)
+      
+      return {
+        id: result.id,
+        test_id: result.test_id,
+        score: result.score,
+        created_at: result.created_at,
+        test_title: config.title,
+        result_rule: {
+          title: rule.title,
+          description: rule.description,
+          recommendations: rule.recommendations
+        }
+      }
+    } catch (error) {
+      // Если тест не найден в конфигах
+      return {
+        id: result.id,
+        test_id: result.test_id,
+        score: result.score,
+        created_at: result.created_at,
+        test_title: 'Неизвестный тест',
+        result_rule: {
+          title: 'Результат недоступен',
+          description: 'Информация о тесте устарела',
+          recommendations: []
+        }
+      }
+    }
+  }) || []
 
   return (
     <div className="container mx-auto p-4">
@@ -70,21 +100,58 @@ export default async function ProfilePage() {
         {formattedResults.length > 0 ? (
           formattedResults.map((result) => (
             <div key={result.id} className="border p-4 rounded-lg mb-4">
-              <div className="flex justify-between items-start">
+              <div className="flex justify-between items-start mb-2">
                 <div>
-                  <h3 className="font-semibold">
-                    {result.test_name || 'Неизвестный тест'}
+                  <h3 className="font-semibold text-lg">
+                    {result.test_title}
+                    <span className="ml-2 text-sm font-normal text-gray-500">
+                      ({result.score} баллов)
+                    </span>
                   </h3>
-                  <p className="text-gray-600 mt-2">{result.result_text}</p>
-                  <p className="text-sm text-gray-400 mt-1">
-                    {new Date(result.created_at).toLocaleDateString()}
+                  <p className="text-gray-500 text-sm mt-1">
+                    {new Date(result.created_at).toLocaleDateString('ru-RU', {
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric'
+                    })}
                   </p>
                 </div>
               </div>
+
+              <div className="mt-3">
+                <h4 className="font-medium text-gray-800">
+                  {result.result_rule.title}
+                </h4>
+                <p className="text-gray-600 mt-1">
+                  {result.result_rule.description}
+                </p>
+              </div>
+
+              {result.result_rule.recommendations.length > 0 && (
+                <div className="mt-4 bg-blue-50 p-3 rounded-lg">
+                  <h4 className="font-medium text-blue-800 mb-2">
+                    Рекомендации:
+                  </h4>
+                  <ul className="list-disc pl-5 space-y-1">
+                    {result.result_rule.recommendations.map((rec, i) => (
+                      <li 
+                        key={i} 
+                        className="text-blue-700 text-sm"
+                      >
+                        {rec}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
             </div>
           ))
         ) : (
-          <p className="text-gray-500">Вы еще не прошли ни одного теста</p>
+          <div className="text-center py-8">
+            <p className="text-gray-500">
+              Вы еще не прошли ни одного теста
+            </p>
+          </div>
         )}
       </div>
     </div>

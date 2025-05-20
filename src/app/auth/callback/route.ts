@@ -16,7 +16,7 @@ export async function GET(request: Request) {
         const { data: { user }, error: userError } = await supabase.auth.getUser()
         
         if (userError || !user) {
-          console.error('Ошибка получения пользователя:', userError)
+          console.error('Помилка отримання користувача:', userError)
           return NextResponse.redirect(`${origin}/error`)
         }
 
@@ -27,7 +27,7 @@ export async function GET(request: Request) {
           .eq('user_id', user.id)
 
         if (countError) {
-          console.error('Ошибка проверки профиля:', countError)
+          console.error('Помилка перевірки профілю:', countError)
           return NextResponse.redirect(`${origin}/error`)
         }
 
@@ -38,11 +38,11 @@ export async function GET(request: Request) {
             .insert({
               user_id: user.id,
               user_email: user.email!,
-              user_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Пользователь'
+              user_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Користувач'
             })
 
           if (insertError) {
-            console.error('Ошибка создания профиля:', insertError)
+            console.error('Помилка створення профілю:', insertError)
             return NextResponse.redirect(`${origin}/error`)
           }
         }
@@ -50,7 +50,7 @@ export async function GET(request: Request) {
         return NextResponse.redirect(`${origin}${next}`)
       }
     } catch (err) {
-      console.error('Общая ошибка:', err)
+      console.error('Загальна помилка:', err)
     }
   }
 
