@@ -4,7 +4,12 @@ export interface TestSummary {
   description: string
   questionsCount: number
 }
-
+export interface Pagination {
+  currentPage: number
+  itemsPerPage: number
+  totalItems: number
+  totalPages: number
+}
 export interface TestDetails extends TestSummary {
   questions: Question[]
 }

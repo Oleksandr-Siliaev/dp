@@ -2,6 +2,7 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import { getTestConfig, getResultRule } from '@/lib/test-results'
+import { PaginationControls } from '@/components/PaginationControls'
 
 interface ProfileData {
   user_id: string
@@ -22,9 +23,16 @@ interface TestResult {
   }
 }
 
-export default async function ProfilePage() {
+const ITEMS_PER_PAGE = 5
+
+export default async function ProfilePage({
+  searchParams,
+}: {
+  searchParams?: { [key: string]: string | string[] | undefined }
+}) {
   const supabase = await createClient()
-  
+  const currentPage = Number(searchParams?.page) || 1
+
   // Аутентификация
   const { data: { user }, error: authError } = await supabase.auth.getUser()
   if (authError || !user) redirect('/login')
@@ -38,12 +46,18 @@ export default async function ProfilePage() {
 
   if (profileError) redirect('/error')
 
-  // Запрос результатов тестов
-  const { data: results, error: resultsError } = await supabase
+  // Запрос результатов тестов с пагинацией
+  const { data: results, error: resultsError, count } = await supabase
     .from('test_results')
-    .select('id, test_id, score, created_at')
+    .select('id, test_id, score, created_at', {
+      count: 'exact'
+    })
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
+    .range(
+      (currentPage - 1) * ITEMS_PER_PAGE,
+      currentPage * ITEMS_PER_PAGE - 1
+    )
 
   if (resultsError) redirect('/error')
 
@@ -66,7 +80,6 @@ export default async function ProfilePage() {
         }
       }
     } catch (error) {
-      // Если тест не найден в конфигах
       return {
         id: result.id,
         test_id: result.test_id,
@@ -81,6 +94,9 @@ export default async function ProfilePage() {
       }
     }
   }) || []
+
+  // Расчет общего количества страниц
+  const totalPages = Math.ceil((count || 0) / ITEMS_PER_PAGE)
 
   return (
     <div className="container mx-auto p-4">
@@ -98,54 +114,64 @@ export default async function ProfilePage() {
         <h2 className="text-xl font-bold mb-4">История тестов</h2>
         
         {formattedResults.length > 0 ? (
-          formattedResults.map((result) => (
-            <div key={result.id} className="border p-4 rounded-lg mb-4">
-              <div className="flex justify-between items-start mb-2">
-                <div>
-                  <h3 className="font-semibold text-lg">
-                    {result.test_title}
-                    <span className="ml-2 text-sm font-normal text-gray-500">
-                      ({result.score} баллов)
-                    </span>
-                  </h3>
-                  <p className="text-gray-500 text-sm mt-1">
-                    {new Date(result.created_at).toLocaleDateString('ru-RU', {
-                      day: 'numeric',
-                      month: 'long',
-                      year: 'numeric'
-                    })}
+          <>
+            {formattedResults.map((result) => (
+              <div key={result.id} className="border p-4 rounded-lg mb-4">
+                <div className="flex justify-between items-start mb-2">
+                  <div>
+                    <h3 className="font-semibold text-lg">
+                      {result.test_title}
+                      <span className="ml-2 text-sm font-normal text-gray-500">
+                        ({result.score} баллов)
+                      </span>
+                    </h3>
+                    <p className="text-gray-500 text-sm mt-1">
+                      {new Date(result.created_at).toLocaleDateString('ru-RU', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric'
+                      })}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-3">
+                  <h4 className="font-medium text-gray-800">
+                    {result.result_rule.title}
+                  </h4>
+                  <p className="text-gray-600 mt-1">
+                    {result.result_rule.description}
                   </p>
                 </div>
-              </div>
 
-              <div className="mt-3">
-                <h4 className="font-medium text-gray-800">
-                  {result.result_rule.title}
-                </h4>
-                <p className="text-gray-600 mt-1">
-                  {result.result_rule.description}
-                </p>
+                {result.result_rule.recommendations.length > 0 && (
+                  <div className="mt-4 bg-blue-50 p-3 rounded-lg">
+                    <h4 className="font-medium text-blue-800 mb-2">
+                      Рекомендации:
+                    </h4>
+                    <ul className="list-disc pl-5 space-y-1">
+                      {result.result_rule.recommendations.map((rec, i) => (
+                        <li 
+                          key={i} 
+                          className="text-blue-700 text-sm"
+                        >
+                          {rec}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
+            ))}
 
-              {result.result_rule.recommendations.length > 0 && (
-                <div className="mt-4 bg-blue-50 p-3 rounded-lg">
-                  <h4 className="font-medium text-blue-800 mb-2">
-                    Рекомендации:
-                  </h4>
-                  <ul className="list-disc pl-5 space-y-1">
-                    {result.result_rule.recommendations.map((rec, i) => (
-                      <li 
-                        key={i} 
-                        className="text-blue-700 text-sm"
-                      >
-                        {rec}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+            {/* Пагинация */}
+            <div className="mt-6 flex justify-center">
+              <PaginationControls
+                currentPage={currentPage}
+                totalPages={totalPages}
+              />
             </div>
-          ))
+          </>
         ) : (
           <div className="text-center py-8">
             <p className="text-gray-500">
