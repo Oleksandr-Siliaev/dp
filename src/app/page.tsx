@@ -1,18 +1,24 @@
-// src/app/page.tsx 123
+// src/app/page.tsx 
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { TestCard } from '@/components/TestCard'
 import { TestSummary } from '@/types'
 
 export default function Home() {
   const [tests, setTests] = useState<TestSummary[]>([])
   const [loading, setLoading] = useState(true)
-
-  useEffect(() => {
+  const searchParams = useSearchParams()
+  const searchQuery = searchParams.get('search') || ''
+    useEffect(() => {
     const fetchTests = async () => {
       try {
-        const response = await fetch('/api/tests')
+        const url = searchQuery 
+          ? `/api/tests?search=${encodeURIComponent(searchQuery)}`
+          : '/api/tests'
+          
+        const response = await fetch(url)
         const { data } = await response.json()
         setTests(data || [])
       } catch (error) {
@@ -23,7 +29,7 @@ export default function Home() {
     }
 
     fetchTests()
-  }, [])
+  }, [searchQuery])
 
   if (loading) {
     return (

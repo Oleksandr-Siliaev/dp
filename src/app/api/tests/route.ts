@@ -3,19 +3,24 @@ import { NextResponse } from 'next/server'
 import { TESTS } from './data/tests'
 import { ApiResponse } from '@/types'
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    // Для имитации реального API добавим задержку
-    await new Promise(resolve => setTimeout(resolve, 500))
-    
-    return NextResponse.json({
-      data: TESTS.map(test => ({
+    const { searchParams } = new URL(request.url)
+    const searchQuery = searchParams.get('search')?.toLowerCase() || ''
+
+    const filteredTests = TESTS
+      .map(test => ({
         id: test.id,
         title: test.title,
         description: test.description,
         questionsCount: test.questions.length
       }))
-    } as ApiResponse<typeof TESTS>)
+      .filter(test => 
+        test.title.toLowerCase().includes(searchQuery) ||
+        test.description.toLowerCase().includes(searchQuery)
+      )
+
+    return NextResponse.json({ data: filteredTests } as ApiResponse<typeof TESTS>)
     
   } catch (error) {
     return NextResponse.json(
