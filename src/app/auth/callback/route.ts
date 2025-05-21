@@ -38,7 +38,8 @@ export async function GET(request: Request) {
             .insert({
               user_id: user.id,
               user_email: user.email!,
-              user_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Користувач'
+              user_name: user.user_metadata?.full_name || user.email?.split('@')[0] || 'Користувач',
+               role: 'user'
             })
 
           if (insertError) {

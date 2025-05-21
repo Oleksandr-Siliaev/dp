@@ -28,18 +28,33 @@ export async function updateSession(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser()
 
-  // Разрешаем доступ к этим путям без авторизации
+  // Разрешенные пути без авторизации
   const allowedPaths = [
-    '/',                 // Главная страница
-    '/login',            // Страница входа
-    '/auth/callback'     // OAuth callback
+    '/',
+    '/login',
+    '/auth/callback'
   ]
 
+  // Проверка авторизации для защищенных путей
   if (!user && !allowedPaths.some(path => request.nextUrl.pathname.startsWith(path))) {
-    // Редиректим НЕавторизованных на главную вместо /login
     const url = request.nextUrl.clone()
     url.pathname = '/'
     return NextResponse.redirect(url)
+  }
+
+  // Проверка прав администратора для /admin
+  if (user && request.nextUrl.pathname.startsWith('/admin')) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('user_id', user.id)
+      .single()
+
+    if (profile?.role !== 'admin') {
+      const url = request.nextUrl.clone()
+      url.pathname = '/'
+      return NextResponse.redirect(url)
+    }
   }
 
   return response

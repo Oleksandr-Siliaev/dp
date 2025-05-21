@@ -26,6 +26,12 @@ interface Answer {
   score: number 
 }
 
+export interface ProfileData {
+  user_id: string
+  user_email: string
+  user_name: string
+  role: 'user' | 'admin' // ← новая колонка
+}
 export interface ApiResponse<T> {
   data?: T
   error?: string
