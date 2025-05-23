@@ -3,6 +3,7 @@ import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import { getTestConfig, getResultRule } from '@/lib/test-results'
 import { PaginationControls } from '@/components/PaginationControls'
+import RecommendationsDisclosure from '@/components/RecommendationsDisclosure'
 
 interface ProfileData {
   user_id: string
@@ -145,22 +146,10 @@ export default async function ProfilePage({
                 </div>
 
                 {result.result_rule.recommendations.length > 0 && (
-                  <div className="mt-4 bg-blue-50 p-3 rounded-lg">
-                    <h4 className="font-medium text-blue-800 mb-2">
-                      Рекомендации:
-                    </h4>
-                    <ul className="list-disc pl-5 space-y-1">
-                      {result.result_rule.recommendations.map((rec, i) => (
-                        <li 
-                          key={i} 
-                          className="text-blue-700 text-sm"
-                        >
-                          {rec}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
+  <RecommendationsDisclosure 
+    recommendations={result.result_rule.recommendations} 
+  />
+)}
               </div>
             ))}
 
