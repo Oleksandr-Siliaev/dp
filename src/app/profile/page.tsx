@@ -3,13 +3,7 @@ import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import { getTestConfig, getResultRule } from '@/lib/test-results'
 import { PaginationControls } from '@/components/PaginationControls'
-import RecommendationsDisclosure from '@/components/RecommendationsDisclosure'
-
-interface ProfileData {
-  user_id: string
-  user_email: string
-  user_name: string
-}
+import TestResultsList from '@/components/TestResultsList'
 
 interface TestResult {
   id: string
@@ -39,64 +33,29 @@ export default async function ProfilePage({
   if (authError || !user) redirect('/login')
 
   // Получение профиля
-  const { data: profile, error: profileError } = await supabase
+  const { data: profile } = await supabase
     .from('profiles')
     .select('user_email, user_name')
     .eq('user_id', user.id)
     .single()
 
-  if (profileError) redirect('/error')
-
-  // Запрос результатов тестов с пагинацией
-  const { data: results, error: resultsError, count } = await supabase
+  // Запрос результатов с пагинацией
+  const { data: results, count } = await supabase
     .from('test_results')
-    .select('id, test_id, score, created_at', {
-      count: 'exact'
-    })
+    .select('id, test_id, score, created_at', { count: 'exact' })
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
-    .range(
-      (currentPage - 1) * ITEMS_PER_PAGE,
-      currentPage * ITEMS_PER_PAGE - 1
-    )
+    .range((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE - 1)
 
-  if (resultsError) redirect('/error')
+  // Обработка результатов
+  const formattedResults = results?.map(result => ({
+    id: result.id,
+    test_id: result.test_id,
+    score: result.score,
+    created_at: result.created_at,
+    ...getTestDetails(result.test_id, result.score)
+  })) || []
 
-  // Обработка и преобразование результатов
-  const formattedResults = results?.map(result => {
-    try {
-      const config = getTestConfig(result.test_id)
-      const rule = getResultRule(result.test_id, result.score)
-      
-      return {
-        id: result.id,
-        test_id: result.test_id,
-        score: result.score,
-        created_at: result.created_at,
-        test_title: config.title,
-        result_rule: {
-          title: rule.title,
-          description: rule.description,
-          recommendations: rule.recommendations
-        }
-      }
-    } catch (error) {
-      return {
-        id: result.id,
-        test_id: result.test_id,
-        score: result.score,
-        created_at: result.created_at,
-        test_title: 'Неизвестный тест',
-        result_rule: {
-          title: 'Результат недоступен',
-          description: 'Информация о тесте устарела',
-          recommendations: []
-        }
-      }
-    }
-  }) || []
-
-  // Расчет общего количества страниц
   const totalPages = Math.ceil((count || 0) / ITEMS_PER_PAGE)
 
   return (
@@ -105,70 +64,46 @@ export default async function ProfilePage({
       <div className="mb-8 border-b pb-6">
         <h1 className="text-2xl font-bold mb-4">Ваш профиль</h1>
         <div className="space-y-2">
-          <p><span className="font-semibold">Имя:</span> {profile.user_name || 'Не указано'}</p>
-          <p><span className="font-semibold">Email:</span> {profile.user_email}</p>
+          <p><span className="font-semibold">Имя:</span> {profile?.user_name || 'Не указано'}</p>
+          <p><span className="font-semibold">Email:</span> {profile?.user_email}</p>
         </div>
       </div>
 
-      {/* Секция результатов */}
-      <div>
-        <h2 className="text-xl font-bold mb-4">История тестов</h2>
-        
-        {formattedResults.length > 0 ? (
-          <>
-            {formattedResults.map((result) => (
-              <div key={result.id} className="border p-4 rounded-lg mb-4">
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <h3 className="font-semibold text-lg">
-                      {result.test_title}
-                      <span className="ml-2 text-sm font-normal text-gray-500">
-                        ({result.score} баллов)
-                      </span>
-                    </h3>
-                    <p className="text-gray-500 text-sm mt-1">
-                      {new Date(result.created_at).toLocaleDateString('ru-RU', {
-                        day: 'numeric',
-                        month: 'long',
-                        year: 'numeric'
-                      })}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="mt-3">
-                  <h4 className="font-medium text-gray-800">
-                    {result.result_rule.title}
-                  </h4>
-                  <p className="text-gray-600 mt-1">
-                    {result.result_rule.description}
-                  </p>
-                </div>
-
-                {result.result_rule.recommendations.length > 0 && (
-  <RecommendationsDisclosure 
-    recommendations={result.result_rule.recommendations} 
-  />
-)}
-              </div>
-            ))}
-
-            {/* Пагинация */}
-            <div className="mt-6 flex justify-center">
-              <PaginationControls
-                currentPage={currentPage}
-                totalPages={totalPages}
-              />
-            </div>
-          </>
-        ) : (
-          <div className="text-center py-8">
-            <p className="text-gray-500">
-              Вы еще не прошли ни одного теста
-            </p>
-          </div>
-        )}
+      {/* Секция результатов с поиском */}
+      <TestResultsList results={formattedResults} />
+      
+      {/* Серверная пагинация */}
+      <div className="mt-6 flex justify-center">
+        <PaginationControls
+          currentPage={currentPage}
+          totalPages={totalPages}
+        />
       </div>
     </div>
   )
+}
+
+// Вспомогательная функция для получения данных теста
+function getTestDetails(testId: string, score: number) {
+  try {
+    const config = getTestConfig(testId)
+    const rule = getResultRule(testId, score)
+    return {
+      test_title: config.title,
+      result_rule: {
+        title: rule.title,
+        description: rule.description,
+        recommendations: rule.recommendations
+      }
+    }
+  } catch (error) {
+    return {
+      test_title: 'Неизвестный тест',
+      result_rule: {
+        title: 'Результат недоступен',
+        description: 'Информация о тесте устарела',
+        recommendations: []
+      }
+    }
+  }
 }
