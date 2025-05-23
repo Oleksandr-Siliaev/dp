@@ -2,7 +2,6 @@
 'use client'
 
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { createClient } from '@/utils/supabase/client'
 import { useEffect, useState } from 'react'
 import { User } from '@supabase/supabase-js'
@@ -10,11 +9,9 @@ import { ProfileData } from '@/types'
 
 export function Navbar() {
   const supabase = createClient()
-  const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
   const [profile, setProfile] = useState<ProfileData | null>(null)
-  const [searchQuery, setSearchQuery] = useState('')
-  
+
   useEffect(() => {
     const checkAuth = async () => {
       const { data: { user } } = await supabase.auth.getUser()
@@ -39,12 +36,7 @@ export function Navbar() {
     }
     
     checkAuth()
-  }, [])
-
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
-    router.push(`/?search=${encodeURIComponent(searchQuery)}`)
-  }
+  }, [supabase]) // Добавили supabase в зависимости
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -55,43 +47,8 @@ export function Navbar() {
     <nav className="bg-white shadow-sm">
       <div className="container mx-auto px-4 py-3 flex flex-col md:flex-row gap-4 md:gap-0 items-center">
         <Link href="/" className="text-xl font-bold md:mr-4">Тесты</Link>
-        
-        <form 
-          onSubmit={handleSearch}
-          className="flex-1 w-full md:max-w-xl mx-4"
-        >
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Поиск по названию теста..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            {searchQuery && (
-              <button
-                type="button"
-                onClick={() => setSearchQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 text-gray-400"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            )}
-          </div>
-        </form>
+
+        <div className="flex-1"></div>
 
         <div className="flex items-center gap-4">
           {user ? (

@@ -1,4 +1,4 @@
-// src/app/api/tests/route.ts
+// app/api/tests/route.ts
 import { NextResponse } from 'next/server'
 import { TESTS } from './data/tests'
 import { ApiResponse } from '@/types'
