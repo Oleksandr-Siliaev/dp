@@ -1,11 +1,14 @@
+// components/TestComponent.tsx
 'use client'
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/utils/supabase/client'
-import { TestDetails } from '@/types'
 import { User } from '@supabase/supabase-js'
-import Link from 'next/link'
+import { TestDetails } from '@/types'
 import { getResultRule } from '@/lib/test-results'
+import Link from 'next/link'
+import { Disclosure } from '@headlessui/react'
+import { ChevronDownIcon } from '@heroicons/react/24/outline'
 
 const Progress = ({ current, total }: { current: number; total: number }) => (
   <div className="mb-4">
@@ -32,6 +35,7 @@ export function TestComponent({ test }: { test: TestDetails }) {
   } | null>(null)
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(false)
+  const [errorMessage, setErrorMessage] = useState('')
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -45,9 +49,33 @@ export function TestComponent({ test }: { test: TestDetails }) {
     const newAnswers = [...answers]
     newAnswers[currentQuestion] = answerIndex
     setAnswers(newAnswers)
+    setErrorMessage('') // Сбрасываем ошибку при выборе ответа
+  }
+
+  const validateCurrentAnswer = () => {
+    return answers[currentQuestion] !== undefined
+  }
+
+  const handleNext = () => {
+    if (!validateCurrentAnswer()) {
+      setErrorMessage('Пожалуйста, выберите ответ перед продолжением')
+      return
+    }
+    
+    if (currentQuestion < test.questions.length - 1) {
+      setCurrentQuestion(prev => prev + 1)
+      setErrorMessage('')
+    } else {
+      calculateResult()
+    }
   }
 
   const calculateResult = async () => {
+    if (!validateCurrentAnswer()) {
+      setErrorMessage('Пожалуйста, ответьте на последний вопрос')
+      return
+    }
+
     const totalScore = test.questions.reduce((acc, question, index) => {
       const answerIndex = answers[index]
       const score = question.answers[answerIndex]?.score ?? 0
@@ -121,6 +149,7 @@ export function TestComponent({ test }: { test: TestDetails }) {
     )
   }
 
+ 
   return (
     <div>
       <Progress 
@@ -128,6 +157,12 @@ export function TestComponent({ test }: { test: TestDetails }) {
         total={test.questions.length} 
       />
       
+      {errorMessage && (
+        <div className="mb-4 p-2 bg-red-100 text-red-600 rounded">
+          {errorMessage}
+        </div>
+      )}
+
       <h3 className="text-xl font-semibold mb-4">
         {test.questions[currentQuestion].text}
       </h3>
@@ -159,13 +194,7 @@ export function TestComponent({ test }: { test: TestDetails }) {
         )}
         
         <button
-          onClick={() => {
-            if (currentQuestion < test.questions.length - 1) {
-              setCurrentQuestion(prev => prev + 1)
-            } else {
-              calculateResult()
-            }
-          }}
+          onClick={handleNext}
           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors ml-auto"
           disabled={loading}
         >
