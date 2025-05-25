@@ -13,8 +13,15 @@ interface TestRuleForm {
   recommendations: string
 }
 
+interface AnswerForm {
+  text: string
+  score: string
+  recommendations: string
+}
+
 interface QuestionForm {
   text: string
+  answers: AnswerForm[]
 }
 
 export default function AddTestPage() {
@@ -23,15 +30,11 @@ export default function AddTestPage() {
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
 
-  // Основные поля формы
   const [formData, setFormData] = useState({
     testTitle: '',
-    testDescription: '',
-    answers: 'Никогда, Иногда, Часто', // Шаблон ответов по умолчанию
-    answersScores: '0, 1, 2' // Баллы для ответов
+    testDescription: ''
   })
 
-  // Логика результатов
   const [rules, setRules] = useState<TestRuleForm[]>([{
     minScore: '',
     maxScore: '',
@@ -40,8 +43,33 @@ export default function AddTestPage() {
     recommendations: ''
   }])
 
-  // Вопросы
-  const [questions, setQuestions] = useState<QuestionForm[]>([{ text: '' }])
+  const [questions, setQuestions] = useState<QuestionForm[]>([{ 
+    text: '', 
+    answers: [{ text: '', score: '', recommendations: '' }] 
+  }])
+
+  const addQuestion = () => {
+    setQuestions([...questions, { 
+      text: '', 
+      answers: [{ text: '', score: '', recommendations: '' }] 
+    }])
+  }
+
+  const addAnswer = (questionIndex: number) => {
+    const newQuestions = [...questions]
+    newQuestions[questionIndex].answers.push({ 
+      text: '', 
+      score: '', 
+      recommendations: '' 
+    })
+    setQuestions(newQuestions)
+  }
+
+  const removeAnswer = (questionIndex: number, answerIndex: number) => {
+    const newQuestions = [...questions]
+    newQuestions[questionIndex].answers.splice(answerIndex, 1)
+    setQuestions(newQuestions)
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -55,33 +83,32 @@ export default function AddTestPage() {
         throw new Error('Заполните название и описание теста')
       }
 
-      if (questions.some(q => !q.text)) {
-        throw new Error('Все вопросы должны иметь текст')
-      }
-
-      // Формируем данные для отправки
       const testData = {
         title: formData.testTitle,
         description: formData.testDescription,
-        answers: formData.answers.split(',').map(a => a.trim()),
-        scores: formData.answersScores.split(',').map(s => parseInt(s.trim())),
         rules: rules.map(rule => ({
           minScore: parseInt(rule.minScore),
           maxScore: parseInt(rule.maxScore),
           title: rule.title,
           description: rule.description,
-          recommendations: rule.recommendations.split('\n')
+          recommendations: rule.recommendations.split('\n').filter(r => r.trim())
         })),
-        questions: questions.map(q => ({ text: q.text })),
+        questions: questions.map((question, qIndex) => ({
+          id: qIndex + 1,
+          text: question.text,
+          answers: question.answers.map((answer, aIndex) => ({
+            id: aIndex + 1,
+            text: answer.text,
+            score: parseInt(answer.score),
+            recommendations: answer.recommendations.split('\n').filter(r => r.trim())
+          }))
+        })),
         createdAt: new Date().toISOString()
       }
 
-      // Отправка на email через API
       const response = await fetch('/api/submit-test', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(testData)
       })
 
@@ -89,9 +116,9 @@ export default function AddTestPage() {
 
       setSuccess('Тест успешно отправлен на модерацию!')
       // Сброс формы
-      setFormData({ testTitle: '', testDescription: '', answers: '', answersScores: '' })
+      setFormData({ testTitle: '', testDescription: '' })
       setRules([{ minScore: '', maxScore: '', title: '', description: '', recommendations: '' }])
-      setQuestions([{ text: '' }])
+      setQuestions([{ text: '', answers: [{ text: '', score: '', recommendations: '' }] }])
 
     } catch (err: any) {
       setError(err.message || 'Произошла ошибка')
@@ -132,38 +159,7 @@ export default function AddTestPage() {
           </div>
         </div>
 
-        {/* Шаблон ответов */}
-        <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Шаблон ответов</h2>
-          
-          <div>
-            <label className="block mb-2 font-medium">
-              Варианты ответов (через запятую)
-            </label>
-            <input
-              type="text"
-              value={formData.answers}
-              onChange={e => setFormData({...formData, answers: e.target.value})}
-              className="w-full p-2 border rounded"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block mb-2 font-medium">
-              Баллы для ответов (через запятую)
-            </label>
-            <input
-              type="text"
-              value={formData.answersScores}
-              onChange={e => setFormData({...formData, answersScores: e.target.value})}
-              className="w-full p-2 border rounded"
-              required
-            />
-          </div>
-        </div>
-
-        {/* Логика результатов */}
+{/* Логика результатов */}
         <div className="space-y-4">
           <h2 className="text-xl font-semibold">Логика результатов</h2>
           
@@ -231,7 +227,7 @@ export default function AddTestPage() {
               </div>
 
               <div>
-                <label className="block mb-2">Рекомендации (каждая с новой строки)</label>
+                <label className="block mb-2">Результат</label>
                 <textarea
                   value={rule.recommendations}
                   onChange={e => {
@@ -261,32 +257,107 @@ export default function AddTestPage() {
           </button>
         </div>
 
-        {/* Вопросы */}
+        {/* Вопросы и ответы */}
         <div className="space-y-4">
           <h2 className="text-xl font-semibold">Вопросы</h2>
           
-          {questions.map((question, index) => (
-            <div key={index} className="p-4 border rounded">
-              <label className="block mb-2">Вопрос {index + 1}</label>
-              <textarea
-                value={question.text}
-                onChange={e => {
-                  const newQuestions = [...questions]
-                  newQuestions[index].text = e.target.value
-                  setQuestions(newQuestions)
-                }}
-                className="w-full p-2 border rounded h-24"
-                required
-              />
+          {questions.map((question, qIndex) => (
+            <div key={qIndex} className="p-4 border rounded space-y-4">
+              <div>
+                <label className="block mb-2">Вопрос {qIndex + 1}</label>
+                <textarea
+                  value={question.text}
+                  onChange={e => {
+                    const newQuestions = [...questions]
+                    newQuestions[qIndex].text = e.target.value
+                    setQuestions(newQuestions)
+                  }}
+                  className="w-full p-2 border rounded h-24"
+                  required
+                />
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="font-medium">Варианты ответов:</h3>
+                
+                {question.answers.map((answer, aIndex) => (
+                  <div key={aIndex} className="p-3 border rounded space-y-2">
+                    <div className="grid grid-cols-2 gap-2">
+                      <div>
+                        <label className="block mb-1">Текст ответа</label>
+                        <input
+                          type="text"
+                          value={answer.text}
+                          onChange={e => {
+                            const newQuestions = [...questions]
+                            newQuestions[qIndex].answers[aIndex].text = e.target.value
+                            setQuestions(newQuestions)
+                          }}
+                          className="w-full p-2 border rounded"
+                          required
+                        />
+                      </div>
+                      
+                      <div>
+                        <label className="block mb-1">Баллы</label>
+                        <input
+                          type="number"
+                          value={answer.score}
+                          onChange={e => {
+                            const newQuestions = [...questions]
+                            newQuestions[qIndex].answers[aIndex].score = e.target.value
+                            setQuestions(newQuestions)
+                          }}
+                          className="w-full p-2 border rounded"
+                          required
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block mb-1">Рекомендации (каждая с новой строки)</label>
+                      <textarea
+                        value={answer.recommendations}
+                        onChange={e => {
+                          const newQuestions = [...questions]
+                          newQuestions[qIndex].answers[aIndex].recommendations = e.target.value
+                          setQuestions(newQuestions)
+                        }}
+                        className="w-full p-2 border rounded h-20"
+                        placeholder="Рекомендация 1\nРекомендация 2"
+                        required
+                      />
+                    </div>
+
+                    {question.answers.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeAnswer(qIndex, aIndex)}
+                        className="text-red-500 text-sm hover:underline"
+                      >
+                        Удалить ответ
+                      </button>
+                    )}
+                  </div>
+                ))}
+
+                <button
+                  type="button"
+                  onClick={() => addAnswer(qIndex)}
+                  className="bg-gray-200 px-3 py-1 rounded text-sm"
+                >
+                  + Добавить вариант ответа
+                </button>
+              </div>
             </div>
           ))}
 
           <button
             type="button"
-            onClick={() => setQuestions([...questions, { text: '' }])}
+            onClick={addQuestion}
             className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
           >
-            Добавить вопрос
+            + Добавить вопрос
           </button>
         </div>
 
