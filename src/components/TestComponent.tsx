@@ -150,7 +150,7 @@ export function TestComponent({ test }: { test: TestDetails }) {
                 <li 
                   key={i} 
                   className={`text-sm ${
-                    i === 0 ? 'text-red-600 font-semibold' : 'text-gray-700'
+                    i === 0 ? 'text-gray-700 font-semibold' : 'text-gray-700'
                   }`}
                 >
                   {rec}
