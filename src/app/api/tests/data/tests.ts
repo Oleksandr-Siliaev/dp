@@ -21,9 +21,9 @@ export const TESTS: TestDetails[] = [
             id: 2,
             text: "Как часто вы теряете интерес к вещам, которые раньше вам нравились?",
             answers: [
-            { id: 1, text: "Никогда", score: 0 },
-            { id: 2, text: "Иногда", score: 1 },
-            { id: 3, text: "Часто", score: 2 },
+            { id: 1, text: "Никогда", score: 0,recommendations: ["0"] },
+            { id: 2, text: "Иногда", score: 1,recommendations: ["1"] },
+            { id: 3, text: "Часто", score: 2,recommendations: ["2"] }
             ]
         },
         {

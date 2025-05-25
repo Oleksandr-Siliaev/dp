@@ -101,9 +101,15 @@ function getTestDetails(testId: string, score: number, selectedAnswers?: Array<{
   try {
     const config = getTestConfig(testId)
     const rule = getResultRule(testId, score)
-    const personalRecommendations = selectedAnswers 
-      ? getPersonalRecommendations(testId, selectedAnswers)
-      : []
+const personalRecommendations = selectedAnswers 
+  ? getPersonalRecommendations(
+      testId,
+      selectedAnswers.map(a => ({
+        questionId: a.questionId,
+        answerId: a.answerId // Теперь здесь реальный ID ответа
+      }))
+    )
+  : [];
       
     return {
       test_title: config.title,

@@ -17,7 +17,6 @@ type TestConfig = {
   results: TestRule[]
 }
 
-// Добавляем новый тип для выбранных ответов
 type SelectedAnswer = {
   questionId: number
   answerId: number
@@ -40,15 +39,27 @@ export function getResultRule(testId: string, score: number): TestRule {
   return rule || config.results[config.results.length - 1]
 }
 
-// Добавляем новую функцию для получения персональных рекомендаций
 export function getPersonalRecommendations(testId: string, selectedAnswers: SelectedAnswer[]): string[] {
   const test = TESTS.find(t => t.id === testId)
   if (!test) return []
 
-  return selectedAnswers
-    .flatMap(answer => {
-      const question = test.questions.find(q => q.id === answer.questionId)
-      return question?.answers.find(a => a.id === answer.answerId)?.recommendations || []
-    })
-    .filter((rec, index, arr) => rec && arr.indexOf(rec) === index) // Удаляем дубликаты
+  // Собираем рекомендации с информацией о приоритете
+  const recommendationsWithPriority = selectedAnswers.flatMap(answer => {
+    const question = test.questions.find(q => q.id === answer.questionId)
+    const answerData = question?.answers.find(a => a.id === answer.answerId)
+    
+    return answerData?.recommendations?.map(rec => ({
+      text: rec,
+      priority: answerData.score // Используем score ответа как приоритет
+    })) || []
+  })
+
+  // Сортируем по приоритету и удаляем дубликаты
+  const uniqueRecs = Array.from(new Map(
+    recommendationsWithPriority
+      .sort((a, b) => b.priority - a.priority) // Сортировка по убыванию
+      .map(item => [item.text, item]) // Удаление дубликатов
+  ).values())
+
+  return uniqueRecs.map(rec => rec.text)
 }

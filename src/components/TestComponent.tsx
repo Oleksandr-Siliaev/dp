@@ -84,12 +84,12 @@ export function TestComponent({ test }: { test: TestDetails }) {
 
     const rule = getResultRule(test.id, totalScore)
     setResult({ score: totalScore, rule })
-     const selectedAnswers = test.questions.map((question, index) => ({
-    questionId: question.id,
-    answerId: answers[index],
-    questionText: question.text,
-    answerText: question.answers[answers[index]]?.text
-  }));
+const selectedAnswers = test.questions.map((question, index) => ({
+  questionId: question.id,
+  answerId: question.answers[answers[index]]?.id, 
+  questionText: question.text,
+  answerText: question.answers[answers[index]]?.text
+}));
     if (user) {
       setLoading(true)
       try {
