@@ -15,6 +15,7 @@ interface TestResult {
     description: string
     recommendations: string[]
   }
+  personalRecommendations?: string[]
 }
 
 const ITEMS_PER_PAGE = 5
@@ -23,12 +24,10 @@ export default function TestResultsList({ results }: { results: TestResult[] }) 
   const [searchQuery, setSearchQuery] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
 
-  // Фильтрация результатов
   const filteredResults = results.filter(result =>
     result.test_title.toLowerCase().includes(searchQuery.toLowerCase())
   )
 
-  // Пагинация
   const totalPages = Math.ceil(filteredResults.length / ITEMS_PER_PAGE)
   const paginatedResults = filteredResults.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
@@ -37,7 +36,6 @@ export default function TestResultsList({ results }: { results: TestResult[] }) 
 
   return (
     <div>
-      {/* Поисковая строка */}
       <div className="mb-6">
         <input
           type="text"
@@ -51,7 +49,6 @@ export default function TestResultsList({ results }: { results: TestResult[] }) 
         />
       </div>
 
-      {/* Список результатов */}
       {paginatedResults.map((result) => (
         <div key={result.id} className="border p-4 rounded-lg mb-4">
           <div className="flex justify-between items-start mb-2">
@@ -84,12 +81,19 @@ export default function TestResultsList({ results }: { results: TestResult[] }) 
           {result.result_rule.recommendations.length > 0 && (
             <RecommendationsDisclosure 
               recommendations={result.result_rule.recommendations} 
+              title="Общие рекомендации"
+            />
+          )}
+
+          {result.personalRecommendations && result.personalRecommendations.length > 0 && (
+            <RecommendationsDisclosure 
+              recommendations={result.personalRecommendations}
+              title="Персональные рекомендации"
             />
           )}
         </div>
       ))}
 
-      {/* Пагинация */}
       <div className="mt-6 flex justify-center">
         <PaginationControls
           currentPage={currentPage}

@@ -1,7 +1,7 @@
 // app/profile/page.tsx
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
-import { getTestConfig, getResultRule } from '@/lib/test-results'
+import { getTestConfig, getResultRule,getPersonalRecommendations } from '@/lib/test-results'
 import { PaginationControls } from '@/components/PaginationControls'
 import TestResultsList from '@/components/TestResultsList'
 
@@ -11,11 +11,16 @@ interface TestResult {
   score: number
   created_at: string
   test_title: string
+  selected_answers?: Array<{  // Добавить новое поле
+    questionId: number
+    answerId: number
+  }>
   result_rule: {
     title: string
     description: string
     recommendations: string[]
   }
+  personalRecommendations?: string[] // Добавить новое поле
 }
 
 const ITEMS_PER_PAGE = 5
@@ -41,20 +46,25 @@ export default async function ProfilePage({
 
   // Запрос результатов с пагинацией
   const { data: results, count } = await supabase
-    .from('test_results')
-    .select('id, test_id, score, created_at', { count: 'exact' })
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false })
-    .range((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE - 1)
+  .from('test_results')
+  .select('id, test_id, score, created_at, selected_answers', { count: 'exact' }) // Добавить selected_answers
+  .eq('user_id', user.id)
+  .order('created_at', { ascending: false })
+  .range((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE - 1)
 
   // Обработка результатов
   const formattedResults = results?.map(result => ({
-    id: result.id,
-    test_id: result.test_id,
-    score: result.score,
-    created_at: result.created_at,
-    ...getTestDetails(result.test_id, result.score)
-  })) || []
+  id: result.id,
+  test_id: result.test_id,
+  score: result.score,
+  created_at: result.created_at,
+  selected_answers: result.selected_answers, // Сохраняем выбранные ответы
+  ...getTestDetails(
+    result.test_id, 
+    result.score,
+    result.selected_answers as Array<{ questionId: number, answerId: number }> // Приведение типа
+  )
+})) || []
 
   const totalPages = Math.ceil((count || 0) / ITEMS_PER_PAGE)
 
@@ -84,17 +94,25 @@ export default async function ProfilePage({
 }
 
 // Вспомогательная функция для получения данных теста
-function getTestDetails(testId: string, score: number) {
+function getTestDetails(testId: string, score: number, selectedAnswers?: Array<{ 
+  questionId: number
+  answerId: number 
+}>) {
   try {
     const config = getTestConfig(testId)
     const rule = getResultRule(testId, score)
+    const personalRecommendations = selectedAnswers 
+      ? getPersonalRecommendations(testId, selectedAnswers)
+      : []
+      
     return {
       test_title: config.title,
       result_rule: {
         title: rule.title,
         description: rule.description,
         recommendations: rule.recommendations
-      }
+      },
+      personalRecommendations // Добавить персонализированные рекомендации
     }
   } catch (error) {
     return {
@@ -103,7 +121,8 @@ function getTestDetails(testId: string, score: number) {
         title: 'Результат недоступен',
         description: 'Информация о тесте устарела',
         recommendations: []
-      }
+      },
+      personalRecommendations: []
     }
   }
 }

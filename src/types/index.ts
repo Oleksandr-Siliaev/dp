@@ -24,6 +24,7 @@ interface Answer {
   id: number
   text: string
   score: number 
+  recommendations?: string[]
 }
 
 export interface ProfileData {

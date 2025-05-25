@@ -84,7 +84,12 @@ export function TestComponent({ test }: { test: TestDetails }) {
 
     const rule = getResultRule(test.id, totalScore)
     setResult({ score: totalScore, rule })
-
+     const selectedAnswers = test.questions.map((question, index) => ({
+    questionId: question.id,
+    answerId: answers[index],
+    questionText: question.text,
+    answerText: question.answers[answers[index]]?.text
+  }));
     if (user) {
       setLoading(true)
       try {
@@ -93,7 +98,8 @@ export function TestComponent({ test }: { test: TestDetails }) {
           .insert({
             user_id: user.id,
             test_id: test.id,
-            score: totalScore
+            score: totalScore,
+            selected_answers: selectedAnswers
           })
 
         if (error) throw error
@@ -107,6 +113,10 @@ export function TestComponent({ test }: { test: TestDetails }) {
   }
 
   if (result !== null) {
+    const personalRecommendations = test.questions.flatMap((question, index) => {
+    const answerIndex = answers[index];
+    return question.answers[answerIndex]?.recommendations || [];
+  }).filter((rec, index, arr) => arr.indexOf(rec) === index); // Удаление дубликатов
     return (
       <div className="text-center">
         <h2 className="text-2xl font-bold mb-4">Результат теста</h2>
@@ -124,7 +134,16 @@ export function TestComponent({ test }: { test: TestDetails }) {
             </div>
           )}
         </div>
-
+          {personalRecommendations.length > 0 && (
+        <div className="mb-6 text-left max-w-md mx-auto">
+          <h3 className="text-lg font-semibold mb-2">Персональные рекомендации:</h3>
+          <ul className="list-disc pl-5 space-y-1">
+            {personalRecommendations.map((rec, i) => (
+              <li key={i} className="text-sm text-gray-700">{rec}</li>
+            ))}
+          </ul>
+        </div>
+      )}
         {!user && (
           <div className="mb-4 p-3 bg-yellow-100 rounded-lg">
             <span className="text-yellow-800">
