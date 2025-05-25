@@ -325,7 +325,6 @@ export default function AddTestPage() {
                         }}
                         className="w-full p-2 border rounded h-20"
                         placeholder="Рекомендация 1\nРекомендация 2"
-                        required
                       />
                     </div>
 
