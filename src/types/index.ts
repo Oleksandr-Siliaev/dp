@@ -4,6 +4,20 @@ export interface TestSummary {
   description: string
   questionsCount: number
 }
+export interface TestResult {
+  id: string
+  test_id: string
+  score: number
+  created_at: string
+  test_title: string
+  result_rule: {
+    title: string
+    description: string
+    recommendations: string[]
+  }
+  personalRecommendations?: string[]
+}
+
 export interface Pagination {
   currentPage: number
   itemsPerPage: number
