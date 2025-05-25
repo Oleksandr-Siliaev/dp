@@ -6,7 +6,7 @@ import { TestCard } from '@/components/TestCard'
 import { TestSummary } from '@/types'
 import { PaginationControls } from '@/components/PaginationControls'
 
-const ITEMS_PER_PAGE = 5 // Количество элементов на странице
+const ITEMS_PER_PAGE = 5 
 
 export default function Home() {
   const [tests, setTests] = useState<TestSummary[]>([])
@@ -31,7 +31,6 @@ export default function Home() {
     }
   }
 
-  // Загрузка данных при изменении страницы или поискового запроса
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
       fetchTests(currentPage, searchQuery)
@@ -47,17 +46,16 @@ export default function Home() {
 
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6">Доступные тесты</h1>
+      <h1 className="text-3xl font-bold mb-6">Доступні тести</h1>
       
-      {/* Поле поиска */}
       <div className="mb-6">
         <input
           type="text"
-          placeholder="Поиск по названию теста..."
+          placeholder="Пошук по назві тесту..."
           value={searchQuery}
           onChange={(e) => {
             setSearchQuery(e.target.value)
-            setCurrentPage(1) // Сброс на первую страницу при новом поиске
+            setCurrentPage(1) 
           }}
           className="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500"
         />

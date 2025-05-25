@@ -78,9 +78,9 @@ export default function AddTestPage() {
     setSuccess('')
 
     try {
-      // Валидация
+      // Валідація
       if (!formData.testTitle || !formData.testDescription) {
-        throw new Error('Заполните название и описание теста')
+        throw new Error('Заповніть назву і опис тесту')
       }
 
       const testData = {
@@ -112,16 +112,16 @@ export default function AddTestPage() {
         body: JSON.stringify(testData)
       })
 
-      if (!response.ok) throw new Error('Ошибка отправки формы')
+      if (!response.ok) throw new Error('Помилка відправки форми')
 
-      setSuccess('Тест успешно отправлен на модерацию!')
-      // Сброс формы
+      setSuccess('Тест успішно відправлено на модерацію!')
+      // Скидання форми
       setFormData({ testTitle: '', testDescription: '' })
       setRules([{ minScore: '', maxScore: '', title: '', description: '', recommendations: '' }])
       setQuestions([{ text: '', answers: [{ text: '', score: '', recommendations: '' }] }])
 
     } catch (err: any) {
-      setError(err.message || 'Произошла ошибка')
+      setError(err.message || 'Виникла помилка')
     } finally {
       setLoading(false)
     }
@@ -129,7 +129,7 @@ export default function AddTestPage() {
 
   return (
     <div className="container mx-auto p-4 max-w-4xl">
-      <h1 className="text-2xl font-bold mb-6">Добавить новый тест</h1>
+      <h1 className="text-2xl font-bold mb-6">Додати новий тест</h1>
       
       {error && <div className="mb-4 p-3 bg-red-100 text-red-600 rounded">{error}</div>}
       {success && <div className="mb-4 p-3 bg-green-100 text-green-600 rounded">{success}</div>}
@@ -138,7 +138,7 @@ export default function AddTestPage() {
         {/* Основные поля */}
         <div className="space-y-4">
           <div>
-            <label className="block mb-2 font-medium">Название теста</label>
+            <label className="block mb-2 font-medium">Назва тесту</label>
             <input
               type="text"
               value={formData.testTitle}
@@ -149,7 +149,7 @@ export default function AddTestPage() {
           </div>
 
           <div>
-            <label className="block mb-2 font-medium">Описание теста</label>
+            <label className="block mb-2 font-medium">Опис тесту</label>
             <textarea
               value={formData.testDescription}
               onChange={e => setFormData({...formData, testDescription: e.target.value})}
@@ -159,15 +159,15 @@ export default function AddTestPage() {
           </div>
         </div>
 
-{/* Логика результатов */}
+{/* Логіка результатів */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Логика результатов</h2>
+          <h2 className="text-xl font-semibold">Логіка результатів</h2>
           
           {rules.map((rule, index) => (
             <div key={index} className="p-4 border rounded space-y-3">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block mb-2">Минимальный балл</label>
+                  <label className="block mb-2">Мінамальний бал</label>
                   <input
                     type="number"
                     value={rule.minScore}
@@ -182,7 +182,7 @@ export default function AddTestPage() {
                 </div>
                 
                 <div>
-                  <label className="block mb-2">Максимальный балл</label>
+                  <label className="block mb-2">Максимальний бал</label>
                   <input
                     type="number"
                     value={rule.maxScore}
@@ -198,7 +198,7 @@ export default function AddTestPage() {
               </div>
 
               <div>
-                <label className="block mb-2">Заголовок результата</label>
+                <label className="block mb-2">Заголовок результату</label>
                 <input
                   type="text"
                   value={rule.title}
@@ -213,7 +213,7 @@ export default function AddTestPage() {
               </div>
 
               <div>
-                <label className="block mb-2">Описание</label>
+                <label className="block mb-2">Опис</label>
                 <textarea
                   value={rule.description}
                   onChange={e => {
@@ -251,20 +251,20 @@ export default function AddTestPage() {
               description: '',
               recommendations: ''
             }])}
-            className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
+            className="bg-blue-500 px-4 py-2 rounded hover:bg-blue-300"
           >
-            Добавить правило
+            Додати правило
           </button>
         </div>
 
-        {/* Вопросы и ответы */}
+        {/* Питання і відповіді */}
         <div className="space-y-4">
-          <h2 className="text-xl font-semibold">Вопросы</h2>
+          <h2 className="text-xl font-semibold">Питання</h2>
           
           {questions.map((question, qIndex) => (
             <div key={qIndex} className="p-4 border rounded space-y-4">
               <div>
-                <label className="block mb-2">Вопрос {qIndex + 1}</label>
+                <label className="block mb-2">Питання {qIndex + 1}</label>
                 <textarea
                   value={question.text}
                   onChange={e => {
@@ -278,13 +278,13 @@ export default function AddTestPage() {
               </div>
 
               <div className="space-y-4">
-                <h3 className="font-medium">Варианты ответов:</h3>
+                <h3 className="font-medium">Варіанти відповідей:</h3>
                 
                 {question.answers.map((answer, aIndex) => (
                   <div key={aIndex} className="p-3 border rounded space-y-2">
                     <div className="grid grid-cols-2 gap-2">
                       <div>
-                        <label className="block mb-1">Текст ответа</label>
+                        <label className="block mb-1">Текст відповіді</label>
                         <input
                           type="text"
                           value={answer.text}
@@ -299,7 +299,7 @@ export default function AddTestPage() {
                       </div>
                       
                       <div>
-                        <label className="block mb-1">Баллы</label>
+                        <label className="block mb-1">Бали</label>
                         <input
                           type="number"
                           value={answer.score}
@@ -315,7 +315,7 @@ export default function AddTestPage() {
                     </div>
 
                     <div>
-                      <label className="block mb-1">Рекомендации (каждая с новой строки)</label>
+                      <label className="block mb-1">Рекомендації</label>
                       <textarea
                         value={answer.recommendations}
                         onChange={e => {
@@ -324,7 +324,7 @@ export default function AddTestPage() {
                           setQuestions(newQuestions)
                         }}
                         className="w-full p-2 border rounded h-20"
-                        placeholder="Рекомендация 1\nРекомендация 2"
+                        placeholder="Кожна з нового рядка"
                       />
                     </div>
 
@@ -334,7 +334,7 @@ export default function AddTestPage() {
                         onClick={() => removeAnswer(qIndex, aIndex)}
                         className="text-red-500 text-sm hover:underline"
                       >
-                        Удалить ответ
+                       Видалити відповідь
                       </button>
                     )}
                   </div>
@@ -343,9 +343,9 @@ export default function AddTestPage() {
                 <button
                   type="button"
                   onClick={() => addAnswer(qIndex)}
-                  className="bg-gray-200 px-3 py-1 rounded text-sm"
+                  className="bg-blue-500 text white px-3 py-1 rounded text-sm"
                 >
-                  + Добавить вариант ответа
+                  + Додати варіант відповіді
                 </button>
               </div>
             </div>
@@ -354,9 +354,9 @@ export default function AddTestPage() {
           <button
             type="button"
             onClick={addQuestion}
-            className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300"
+            className="bg-blue-500 text-white px-5 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
           >
-            + Добавить вопрос
+            + Додати питання
           </button>
         </div>
 
@@ -365,7 +365,7 @@ export default function AddTestPage() {
           disabled={loading}
           className="bg-blue-500 text-white px-6 py-3 rounded hover:bg-blue-600 disabled:opacity-50"
         >
-          {loading ? 'Отправка...' : 'Отправить на модерацию'}
+          {loading ? 'Відправка...' : 'Відправити на модерацію'}
         </button>
       </form>
     </div>
