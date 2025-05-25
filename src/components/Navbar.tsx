@@ -43,10 +43,10 @@ export function Navbar() {
     window.location.href = '/'
   }
 
-  return (
+ return (
     <nav className="bg-white shadow-sm">
       <div className="container mx-auto px-4 py-3 flex flex-col md:flex-row gap-4 md:gap-0 items-center">
-        <Link href="/" className="text-xl font-bold md:mr-4">Тесты</Link>
+        <Link href="/" className="text-xl font-bold md:mr-4 text-black">Тесты</Link>
 
         <div className="flex-1"></div>
 
@@ -56,7 +56,7 @@ export function Navbar() {
               {profile?.role === 'admin' && (
                 <Link 
                   href="/admin" 
-                  className="hover:text-blue-500 hidden md:block"
+                  className="text-black hover:text-blue-500 hidden md:block"
                 >
                   Админка
                 </Link>
@@ -64,20 +64,20 @@ export function Navbar() {
               
               <Link 
                 href="/profile" 
-                className="hover:text-blue-500"
+                className="text-black hover:text-blue-500"
               >
                 Профиль
               </Link>
               
               <button 
                 onClick={handleLogout}
-                className="hover:text-red-500"
+                className="text-black hover:text-red-500"
               >
                 Выйти
               </button>
             </>
           ) : (
-            <Link href="/login" className="hover:text-blue-500">
+            <Link href="/login" className="text-black hover:text-blue-500">
               Войти
             </Link>
           )}
