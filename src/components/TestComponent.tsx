@@ -1,11 +1,10 @@
-// components/TestComponent.tsx
 'use client'
 
 import { useState, useEffect } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { User } from '@supabase/supabase-js'
 import { TestDetails } from '@/types'
-import { getResultRule } from '@/lib/test-results'
+import { getResultRule, getPersonalRecommendations } from '@/lib/test-results'
 import Link from 'next/link'
 import { Disclosure } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/24/outline'
@@ -49,7 +48,7 @@ export function TestComponent({ test }: { test: TestDetails }) {
     const newAnswers = [...answers]
     newAnswers[currentQuestion] = answerIndex
     setAnswers(newAnswers)
-    setErrorMessage('') // Сбрасываем ошибку при выборе ответа
+    setErrorMessage('')
   }
 
   const validateCurrentAnswer = () => {
@@ -84,12 +83,14 @@ export function TestComponent({ test }: { test: TestDetails }) {
 
     const rule = getResultRule(test.id, totalScore)
     setResult({ score: totalScore, rule })
-const selectedAnswers = test.questions.map((question, index) => ({
-  questionId: question.id,
-  answerId: question.answers[answers[index]]?.id, 
-  questionText: question.text,
-  answerText: question.answers[answers[index]]?.text
-}));
+
+    const selectedAnswers = test.questions.map((question, index) => ({
+      questionId: question.id,
+      answerId: question.answers[answers[index]]?.id,
+      questionText: question.text,
+      answerText: question.answers[answers[index]]?.text
+    }))
+
     if (user) {
       setLoading(true)
       try {
@@ -113,19 +114,24 @@ const selectedAnswers = test.questions.map((question, index) => ({
   }
 
   if (result !== null) {
-    const personalRecommendations = test.questions.flatMap((question, index) => {
-    const answerIndex = answers[index];
-    return question.answers[answerIndex]?.recommendations || [];
-  }).filter((rec, index, arr) => arr.indexOf(rec) === index); // Удаление дубликатов
+    const selectedAnswersForRecommendations = test.questions.map((question, index) => ({
+      questionId: question.id,
+      answerId: question.answers[answers[index]]?.id
+    }))
+
+    const personalRecommendations = getPersonalRecommendations(test.id, selectedAnswersForRecommendations)
+
     return (
       <div className="text-center">
         <h2 className="text-2xl font-bold mb-4">Результат теста</h2>
+        
+        {/* Общие рекомендации */}
         <div className="mb-6">
           <h3 className="text-lg font-semibold">{result.rule.title}</h3>
           <p className="mt-2 text-gray-600">{result.rule.description}</p>
           {result.rule.recommendations?.length > 0 && (
             <div className="mt-4 text-left max-w-md mx-auto">
-              <h4 className="font-medium mb-2">Рекомендации:</h4>
+              <h4 className="font-medium mb-2">Общие рекомендации:</h4>
               <ul className="list-disc pl-5 space-y-1">
                 {result.rule.recommendations.map((rec, i) => (
                   <li key={i} className="text-sm text-gray-700">{rec}</li>
@@ -134,16 +140,26 @@ const selectedAnswers = test.questions.map((question, index) => ({
             </div>
           )}
         </div>
-          {personalRecommendations.length > 0 && (
-        <div className="mb-6 text-left max-w-md mx-auto">
-          <h3 className="text-lg font-semibold mb-2">Персональные рекомендации:</h3>
-          <ul className="list-disc pl-5 space-y-1">
-            {personalRecommendations.map((rec, i) => (
-              <li key={i} className="text-sm text-gray-700">{rec}</li>
-            ))}
-          </ul>
-        </div>
-      )}
+
+        {/* Персональные рекомендации */}
+        {personalRecommendations.length > 0 && (
+          <div className="mb-6 text-left max-w-md mx-auto">
+            <h3 className="text-lg font-semibold mb-2">Персональные рекомендации:</h3>
+            <ul className="list-disc pl-5 space-y-1">
+              {personalRecommendations.map((rec, i) => (
+                <li 
+                  key={i} 
+                  className={`text-sm ${
+                    i === 0 ? 'text-red-600 font-semibold' : 'text-gray-700'
+                  }`}
+                >
+                  {rec}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         {!user && (
           <div className="mb-4 p-3 bg-yellow-100 rounded-lg">
             <span className="text-yellow-800">
@@ -168,7 +184,6 @@ const selectedAnswers = test.questions.map((question, index) => ({
     )
   }
 
- 
   return (
     <div>
       <Progress 
