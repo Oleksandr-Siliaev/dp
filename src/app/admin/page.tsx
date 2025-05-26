@@ -23,8 +23,8 @@ type AdminTestResult = TestResult & {
 
 interface PageProps {
   searchParams?: {
-    page?: string
-    email?: string
+    page?: string | string[]
+    email?: string | string[]
   }
 }
 
@@ -42,9 +42,20 @@ export default async function AdminPage({ searchParams }: PageProps) {
 
   if (profile?.role !== 'admin') redirect('/')
 
-  const emailQuery = searchParams?.email?.toString() || ''
-  const currentPage = Number(searchParams?.page) || 1
+  // Обработка параметра email
+  const emailParam = searchParams?.email
+  const emailQuery = Array.isArray(emailParam) 
+    ? emailParam[0] || ''
+    : emailParam || ''
 
+  // Обработка параметра page
+  const pageParam = searchParams?.page
+  const pageString = Array.isArray(pageParam)
+    ? pageParam[0] || '1'
+    : pageParam || '1'
+  const currentPage = Math.max(1, parseInt(pageString) || 1)
+
+  // Остальной код остается без изменений
   const { data: users } = await supabase
     .from('profiles')
     .select('user_id, user_email')
@@ -82,12 +93,12 @@ export default async function AdminPage({ searchParams }: PageProps) {
               const config = getTestConfig(result.test_id)
               const rule = getResultRule(result.test_id, result.score)
               const personalRecs = getPersonalRecommendations(
-  result.test_id,
-  (result.selected_answers || []).map((a: { questionId: number; answerId: number }) => ({
-    questionId: a.questionId,
-    answerId: a.answerId
-  }))
-)
+                result.test_id,
+                (result.selected_answers || []).map((a: { questionId: number; answerId: number }) => ({
+                  questionId: a.questionId,
+                  answerId: a.answerId
+                }))
+              )
               
               return {
                 ...result,
