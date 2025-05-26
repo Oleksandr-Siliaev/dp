@@ -22,7 +22,7 @@ type AdminTestResult = TestResult & {
 }
 
 // Remove custom PageProps and let Next.js handle the type
-export default async function AdminPage({ searchParams }: { searchParams?: { page?: string; email?: string } }) {
+export default async function AdminPage({ searchParams }: { searchParams: Record<string, string | string[] | undefined> }) {
   const supabase = await createClient()
   
   const { data: { user } } = await supabase.auth.getUser()
