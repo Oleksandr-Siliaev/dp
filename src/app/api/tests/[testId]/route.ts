@@ -1,7 +1,7 @@
 // src/app/api/tests/[testId]/route.ts
 import { NextResponse } from 'next/server'
 import { TESTS } from '../data/tests'
-import { ApiResponse, TestDetails } from '@/types' // Добавляем импорт TestDetails
+import { ApiResponse, TestDetails } from '@/types'
 
 export async function GET(
   request: Request,
@@ -13,34 +13,34 @@ export async function GET(
 
     if (!test) {
       return NextResponse.json(
-        { error: 'Test not found' },
+        { error: 'Тест не знайдено' },
         { status: 404 }
       )
     }
 
-    // Формируем полный объект TestDetails
+    // Формуємо повний об'єкт TestDetails
     const responseData: TestDetails = {
       id: test.id,
       title: test.title,
       description: test.description,
-      questionsCount: test.questions.length, // Добавляем обязательное поле
+      questionsCount: test.questions.length,
       questions: test.questions.map(question => ({
         ...question,
         answers: question.answers.map(answer => ({
           id: answer.id,
           text: answer.text,
-          score: answer.score // Добавляем score в ответ
+          score: answer.score
         }))
       }))
     }
 
     return NextResponse.json({
       data: responseData
-    } as ApiResponse<TestDetails>) // Явно указываем тип
+    } as ApiResponse<TestDetails>)
 
-  } catch (error) {
+  } catch {
     return NextResponse.json(
-      { error: 'Internal Server Error' },
+      { error: 'Внутрішня помилка сервера' },
       { status: 500 }
     )
   }
