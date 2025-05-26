@@ -22,12 +22,12 @@ type AdminTestResult = TestResult & {
 }
 
 export default async function AdminPage({
-  searchParams
+  searchParams 
 }: {
   searchParams?: { [key: string]: string | string[] | undefined }
 }) {
   const supabase = await createClient()
-  
+  const Params = await searchParams
   // Authentication check
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
@@ -42,13 +42,13 @@ export default async function AdminPage({
   if (profile?.role !== 'admin') redirect('/')
 
   // Parse search params
-  const emailQuery = Array.isArray(searchParams?.email) 
-    ? searchParams?.email[0] || ''
-    : searchParams?.email || ''
+  const emailQuery = Array.isArray(Params?.email) 
+    ? Params?.email[0] || ''
+    : Params?.email || ''
 
-  const pageString = Array.isArray(searchParams?.page)
-    ? searchParams?.page[0] || '1'
-    : searchParams?.page || '1'
+  const pageString = Array.isArray(Params?.page)
+    ? Params?.page[0] || '1'
+    : Params?.page || '1'
   const currentPage = Math.max(1, parseInt(pageString) || 1)
 
   // User search
