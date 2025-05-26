@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 //app/error/page.tsx
 export default function ErrorPage() {
     return (
@@ -5,12 +7,12 @@ export default function ErrorPage() {
         <div className="text-center">
           <h1 className="text-4xl font-bold mb-4">Ошибка 500</h1>
           <p className="text-lg">Произошла непредвиденная ошибка</p>
-          <link 
+          <Link 
             href="/" 
             className="mt-4 inline-block text-blue-500 hover:underline"
           >
             Вернуться на главную
-          </link>
+          </Link>
         </div>
       </div>
     )
