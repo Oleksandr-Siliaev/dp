@@ -6,7 +6,7 @@ import { TestCard } from '@/components/TestCard'
 import { TestSummary } from '@/types'
 import { PaginationControls } from '@/components/PaginationControls'
 
-const ITEMS_PER_PAGE = 1
+const ITEMS_PER_PAGE = 5
 
 export default function Home() {
   const [tests, setTests] = useState<TestSummary[]>([])
