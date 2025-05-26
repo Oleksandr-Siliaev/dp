@@ -3,12 +3,13 @@ import { NextResponse } from 'next/server'
 import { TESTS } from '../data/tests'
 import { ApiResponse, TestDetails } from '@/types'
 
+
 export async function GET(
   request: Request,
-  { params }: { params: { testId: string } }
+  { params }: { params: Promise<{ testId: string }> }
 ) {
   try {
-    const testId = params.testId
+    const {testId} = await params
     const test = TESTS.find(t => t.id === testId)
 
     if (!test) {
