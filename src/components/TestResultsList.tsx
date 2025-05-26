@@ -1,3 +1,4 @@
+// components/TestResultsList.tsx
 'use client'
 
 import { useState } from 'react' // Добавляем импорт useState

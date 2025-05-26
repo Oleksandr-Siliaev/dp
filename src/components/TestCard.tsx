@@ -1,3 +1,4 @@
+// components/TestCard.tsx
 import Link from 'next/link'
 import { TestSummary } from '@/types'
 
