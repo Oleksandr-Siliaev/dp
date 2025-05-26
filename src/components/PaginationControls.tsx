@@ -4,41 +4,32 @@ import Link from 'next/link'
 type PaginationControlsProps = {
   currentPage: number
   totalPages: number
-  onPageChange?: (page: number) => void
+  searchParams?: Record<string, string>
 }
 
 export function PaginationControls({
   currentPage,
   totalPages,
-  onPageChange
+  searchParams = {}
 }: PaginationControlsProps) {
   const hasPrev = currentPage > 1
   const hasNext = currentPage < totalPages
 
-  const handlePageChange = (newPage: number) => {
-    if (onPageChange) {
-      onPageChange(newPage)
-    }
+  const generateQueryString = () => {
+    const params = new URLSearchParams(searchParams)
+    params.delete('page')
+    return params.toString()
   }
 
   return (
     <div className="flex items-center gap-4">
       {hasPrev && (
-        onPageChange ? (
-          <button
-            onClick={() => handlePageChange(currentPage - 1)}
-            className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 transition-colors"
-          >
-            Назад
-          </button>
-        ) : (
-          <Link
-            href={`?page=${currentPage - 1}`}
-            className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 transition-colors"
-          >
-            Назад
-          </Link>
-        )
+        <Link
+          href={`?${generateQueryString()}&page=${currentPage - 1}`}
+          className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+        >
+          Назад
+        </Link>
       )}
 
       <span className="text-sm text-gray-600">
@@ -46,21 +37,12 @@ export function PaginationControls({
       </span>
 
       {hasNext && (
-        onPageChange ? (
-          <button
-            onClick={() => handlePageChange(currentPage + 1)}
-            className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 transition-colors"
-          >
-            Вперед
-          </button>
-        ) : (
-          <Link
-            href={`?page=${currentPage + 1}`}
-            className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300 transition-colors"
-          >
-            Вперед
-          </Link>
-        )
+        <Link
+          href={`?${generateQueryString()}&page=${currentPage + 1}`}
+          className="px-4 py-2 bg-gray-200 rounded hover:bg-gray-300"
+        >
+          Вперед
+        </Link>
       )}
     </div>
   )

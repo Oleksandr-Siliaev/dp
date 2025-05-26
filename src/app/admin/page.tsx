@@ -209,11 +209,12 @@ export default async function AdminPage({
                 </div>
 
                 <div className="mt-6">
-                  <PaginationControls
-                    currentPage={currentPage}
-                    totalPages={Math.ceil(totalResults / ITEMS_PER_PAGE)}
-                  />
-                </div>
+  <PaginationControls
+    currentPage={currentPage}
+    totalPages={Math.ceil(totalResults / ITEMS_PER_PAGE)}
+    searchParams={{ email: emailQuery }}
+  />
+</div>
               </>
             )}
           </div>
