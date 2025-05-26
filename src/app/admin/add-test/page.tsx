@@ -2,8 +2,7 @@
 'use client'
 
 import { useState } from 'react'
-import { createClient } from '@/utils/supabase/client'
-import { redirect } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 
 interface TestRuleForm {
   minScore: string
@@ -25,10 +24,10 @@ interface QuestionForm {
 }
 
 export default function AddTestPage() {
-  const supabase = createClient()
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const router = useRouter()
 
   const [formData, setFormData] = useState({
     testTitle: '',
@@ -78,7 +77,6 @@ export default function AddTestPage() {
     setSuccess('')
 
     try {
-      // Валідація
       if (!formData.testTitle || !formData.testDescription) {
         throw new Error('Заповніть назву і опис тесту')
       }
@@ -115,13 +113,14 @@ export default function AddTestPage() {
       if (!response.ok) throw new Error('Помилка відправки форми')
 
       setSuccess('Тест успішно відправлено на модерацію!')
-      // Скидання форми
       setFormData({ testTitle: '', testDescription: '' })
       setRules([{ minScore: '', maxScore: '', title: '', description: '', recommendations: '' }])
       setQuestions([{ text: '', answers: [{ text: '', score: '', recommendations: '' }] }])
+      
+      router.refresh()
 
-    } catch (err: any) {
-      setError(err.message || 'Виникла помилка')
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Виникла невідома помилка')
     } finally {
       setLoading(false)
     }
@@ -135,7 +134,6 @@ export default function AddTestPage() {
       {success && <div className="mb-4 p-3 bg-green-100 text-green-600 rounded">{success}</div>}
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Основные поля */}
         <div className="space-y-4">
           <div>
             <label className="block mb-2 font-medium">Назва тесту</label>
@@ -159,7 +157,6 @@ export default function AddTestPage() {
           </div>
         </div>
 
-{/* Логіка результатів */}
         <div className="space-y-4">
           <h2 className="text-xl font-semibold">Логіка результатів</h2>
           
@@ -167,7 +164,7 @@ export default function AddTestPage() {
             <div key={index} className="p-4 border rounded space-y-3">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block mb-2">Мінамальний бал</label>
+                  <label className="block mb-2">Мінімальний бал</label>
                   <input
                     type="number"
                     value={rule.minScore}
@@ -227,7 +224,7 @@ export default function AddTestPage() {
               </div>
 
               <div>
-                <label className="block mb-2">Результат</label>
+                <label className="block mb-2">Рекомендації</label>
                 <textarea
                   value={rule.recommendations}
                   onChange={e => {
@@ -251,13 +248,12 @@ export default function AddTestPage() {
               description: '',
               recommendations: ''
             }])}
-            className="bg-blue-500 px-4 py-2 rounded hover:bg-blue-300"
+            className="bg-blue-500 px-4 py-2 rounded hover:bg-blue-300 text-white"
           >
             Додати правило
           </button>
         </div>
 
-        {/* Питання і відповіді */}
         <div className="space-y-4">
           <h2 className="text-xl font-semibold">Питання</h2>
           
@@ -343,7 +339,7 @@ export default function AddTestPage() {
                 <button
                   type="button"
                   onClick={() => addAnswer(qIndex)}
-                  className="bg-blue-500 text white px-3 py-1 rounded text-sm"
+                  className="bg-blue-500 text-white px-3 py-1 rounded text-sm"
                 >
                   + Додати варіант відповіді
                 </button>
