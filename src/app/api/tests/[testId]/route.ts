@@ -6,10 +6,11 @@ import { ApiResponse, TestDetails } from '@/types'
 
 export async function GET(
   request: Request,
-  { params }: { params: Promise<{ testId: string }> }
+
 ) {
   try {
-    const {testId} = await params
+    const { searchParams } = new URL(request.url)
+    const testId = searchParams.get('testId')
     const test = TESTS.find(t => t.id === testId)
 
     if (!test) {
