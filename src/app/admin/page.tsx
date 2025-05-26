@@ -7,6 +7,7 @@ import { PaginationControls } from '@/components/PaginationControls'
 import { TestResult } from '@/types'
 import RecommendationsDisclosure from '@/components/RecommendationsDisclosure'
 import { getTestConfig, getResultRule, getPersonalRecommendations } from '@/lib/test-results'
+import { SelectedAnswer } from '@/types'
 
 const ITEMS_PER_PAGE = 5
 
@@ -90,11 +91,12 @@ export default async function AdminPage({
               const rule = getResultRule(result.test_id, result.score)
 const personalRecs = getPersonalRecommendations(
   result.test_id,
-  (result.selected_answers || []).map((a: { questionId: number; answerId: number }) => ({
+  (result.selected_answers || []).map((a: SelectedAnswer) => ({
     questionId: a.questionId,
     answerId: a.answerId
-  })
-))
+    // Если функция использует только эти поля, остальные можно не передавать
+  }))
+)
               
               return {
                 ...result,
