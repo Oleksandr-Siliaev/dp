@@ -21,8 +21,14 @@ type AdminTestResult = TestResult & {
   personalRecommendations: string[]
 }
 
-// Remove custom PageProps and let Next.js handle the type
-export default async function AdminPage({ searchParams }: { searchParams: Record<string, string | string[] | undefined> }) {
+interface PageProps {
+  searchParams?: {
+    page?: string
+    email?: string
+  }
+}
+
+export default async function AdminPage({ searchParams }: PageProps) {
   const supabase = await createClient()
   
   const { data: { user } } = await supabase.auth.getUser()
@@ -76,12 +82,12 @@ export default async function AdminPage({ searchParams }: { searchParams: Record
               const config = getTestConfig(result.test_id)
               const rule = getResultRule(result.test_id, result.score)
               const personalRecs = getPersonalRecommendations(
-                result.test_id,
-                (result.selected_answers || []).map((a: { questionId: string; answerId: string }) => ({
-                  questionId: a.questionId,
-                  answerId: a.answerId
-                }))
-              )
+  result.test_id,
+  (result.selected_answers || []).map((a: { questionId: number; answerId: number }) => ({
+    questionId: a.questionId,
+    answerId: a.answerId
+  }))
+)
               
               return {
                 ...result,
