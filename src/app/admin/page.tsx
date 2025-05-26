@@ -22,18 +22,17 @@ type AdminTestResult = TestResult & {
 }
 
 interface PageProps {
-  searchParams?: {
-    page?: string | string[]
-    email?: string | string[]
-  }
+  searchParams?: Record<string, string | string[] | undefined>
 }
 
 export default async function AdminPage({ searchParams }: PageProps) {
   const supabase = await createClient()
   
+  // Authentication check
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) redirect('/login')
 
+  // Authorization check
   const { data: profile } = await supabase
     .from('profiles')
     .select('role')
@@ -42,20 +41,19 @@ export default async function AdminPage({ searchParams }: PageProps) {
 
   if (profile?.role !== 'admin') redirect('/')
 
-  // Обработка параметра email
+  // Обработка параметров запроса
   const emailParam = searchParams?.email
   const emailQuery = Array.isArray(emailParam) 
     ? emailParam[0] || ''
     : emailParam || ''
 
-  // Обработка параметра page
   const pageParam = searchParams?.page
   const pageString = Array.isArray(pageParam)
     ? pageParam[0] || '1'
     : pageParam || '1'
   const currentPage = Math.max(1, parseInt(pageString) || 1)
 
-  // Остальной код остается без изменений
+  // Поиск пользователей
   const { data: users } = await supabase
     .from('profiles')
     .select('user_id, user_email')
@@ -74,11 +72,12 @@ export default async function AdminPage({ searchParams }: PageProps) {
     if (exactUser) {
       selectedUserEmail = exactUser.user_email
       
+      // Получение результатов тестов
       const { data: results, count } = await supabase
         .from('test_results')
-        .select('id, test_id, score, created_at, selected_answers', 
-          { count: 'exact' }
-        )
+        .select('id, test_id, score, created_at, selected_answers', { 
+          count: 'exact' 
+        })
         .eq('user_id', exactUser.user_id)
         .order('created_at', { ascending: false })
         .range(
@@ -87,6 +86,7 @@ export default async function AdminPage({ searchParams }: PageProps) {
         )
 
       if (results) {
+        // Обработка результатов тестов
         userResults = await Promise.all(
           results.map(async (result): Promise<AdminTestResult> => {
             try {
@@ -94,12 +94,11 @@ export default async function AdminPage({ searchParams }: PageProps) {
               const rule = getResultRule(result.test_id, result.score)
               const personalRecs = getPersonalRecommendations(
                 result.test_id,
-                (result.selected_answers || []).map((a: { questionId: number; answerId: number }) => ({
+                (result.selected_answers || []).map((a: any) => ({
                   questionId: a.questionId,
                   answerId: a.answerId
                 }))
               )
-              
               return {
                 ...result,
                 test_title: config.title,
