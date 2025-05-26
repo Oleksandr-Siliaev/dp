@@ -21,15 +21,14 @@ type AdminTestResult = TestResult & {
   personalRecommendations: string[]
 }
 
-export default async function AdminPage({
-  searchParams,
-}: {
-  searchParams?: { 
-    [key: string]: string | string[] | undefined 
+interface PageProps {
+  searchParams?: {
     page?: string
     email?: string
   }
-}) {
+}
+
+export default async function AdminPage({ searchParams }: PageProps) {
   const supabase = await createClient()
   
   const { data: { user } } = await supabase.auth.getUser()
@@ -84,10 +83,11 @@ export default async function AdminPage({
               const rule = getResultRule(result.test_id, result.score)
               const personalRecs = getPersonalRecommendations(
                 result.test_id,
-                (result.selected_answers || []).map((a: { questionId: number; answerId: number }) => ({
+                (result.selected_answers || []).map((a: { questionId: string; answerId: string }) => ({
                   questionId: a.questionId,
                   answerId: a.answerId
-                })))
+                }))
+              )
               
               return {
                 ...result,
@@ -103,10 +103,10 @@ export default async function AdminPage({
               console.error(`Error processing test ${result.test_id}:`, error)
               return {
                 ...result,
-                test_title: 'Unknown Test',
+                test_title: 'Невідомий тест',
                 result_rule: {
-                  title: 'Error',
-                  description: 'Could not load test data',
+                  title: 'Помилка',
+                  description: 'Не вдалося завантажити дані тесту',
                   recommendations: []
                 },
                 personalRecommendations: []
@@ -123,12 +123,12 @@ export default async function AdminPage({
   return (
     <div className="container mx-auto p-4 max-w-6xl">
       <div className="flex justify-between items-start mb-6">
-        <h1 className="text-2xl font-bold">Админ-панель</h1>
+        <h1 className="text-2xl font-bold">Адмін-панель</h1>
         <Link
           href="/admin/add-test"
           className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
         >
-          Создать новый тест
+          Створити новий тест
         </Link>
       </div>
 
@@ -138,7 +138,7 @@ export default async function AdminPage({
             <input
               type="email"
               name="email"
-              placeholder="Поиск пользователя по email..."
+              placeholder="Пошук користувача за email..."
               defaultValue={emailQuery}
               list="user-emails"
               className="w-full p-2 border rounded-lg"
@@ -153,7 +153,7 @@ export default async function AdminPage({
               type="submit"
               className="absolute right-2 top-2 bg-gray-100 px-3 py-1 rounded"
             >
-              Найти
+              Знайти
             </button>
           </div>
         </form>
@@ -161,11 +161,11 @@ export default async function AdminPage({
         {selectedUserEmail && (
           <div className="mt-6">
             <h2 className="text-xl font-semibold mb-4">
-              Результаты пользователя: {selectedUserEmail}
+              Результати користувача: {selectedUserEmail}
             </h2>
 
             {userResults.length === 0 ? (
-              <p className="text-gray-500">Нет результатов тестов</p>
+              <p className="text-gray-500">Немає результатів тестів</p>
             ) : (
               <>
                 <div className="space-y-4">
@@ -184,24 +184,24 @@ export default async function AdminPage({
                           </span>
                         </div>
                         <span className="text-gray-500">
-                          {new Date(result.created_at).toLocaleDateString('ru-RU')}
+                          {new Date(result.created_at).toLocaleDateString('uk-UA')}
                         </span>
                       </div>
                       
                       <div className="flex items-center gap-2 mb-3">
                         <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded">
-                          Баллы: {result.score}
+                          Бали: {result.score}
                         </span>
                       </div>
 
                       <RecommendationsDisclosure 
                         recommendations={result.result_rule.recommendations}
-                        title="Общие рекомендации"
+                        title="Загальні рекомендації"
                       />
                       
                       <RecommendationsDisclosure 
                         recommendations={result.personalRecommendations}
-                        title="Персональные рекомендации"
+                        title="Персональні рекомендації"
                         className="mt-2"
                       />
                     </div>
@@ -209,12 +209,12 @@ export default async function AdminPage({
                 </div>
 
                 <div className="mt-6">
-  <PaginationControls
-    currentPage={currentPage}
-    totalPages={Math.ceil(totalResults / ITEMS_PER_PAGE)}
-    searchParams={{ email: emailQuery }}
-  />
-</div>
+                  <PaginationControls
+                    currentPage={currentPage}
+                    totalPages={Math.ceil(totalResults / ITEMS_PER_PAGE)}
+                    searchParams={{ email: emailQuery }}
+                  />
+                </div>
               </>
             )}
           </div>
