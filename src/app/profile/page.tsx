@@ -10,7 +10,7 @@ const ITEMS_PER_PAGE = 5
 export default async function ProfilePage({
   searchParams,
 }: {
-  searchParams?: { [key: string]: string | string[] | undefined }
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const Params = await searchParams
   const supabase = await createClient()

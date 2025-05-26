@@ -22,9 +22,9 @@ type AdminTestResult = TestResult & {
 }
 
 export default async function AdminPage({
-  searchParams 
+  searchParams
 }: {
-  searchParams?: { [key: string]: string | string[] | undefined }
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
   const supabase = await createClient()
   const Params = await searchParams
