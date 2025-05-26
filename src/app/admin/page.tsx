@@ -93,12 +93,12 @@ export default async function AdminPage({ searchParams }: PageProps) {
               const config = getTestConfig(result.test_id)
               const rule = getResultRule(result.test_id, result.score)
               const personalRecs = getPersonalRecommendations(
-                result.test_id,
-                (result.selected_answers || []).map((a: any) => ({
-                  questionId: a.questionId,
-                  answerId: a.answerId
-                }))
-              )
+  result.test_id,
+  (result.selected_answers || []).map((a: { questionId: number; answerId: number }) => ({
+    questionId: a.questionId,
+    answerId: a.answerId
+  }))
+)
               return {
                 ...result,
                 test_title: config.title,
