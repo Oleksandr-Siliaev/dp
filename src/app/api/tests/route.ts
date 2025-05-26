@@ -7,8 +7,8 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url)
     const searchQuery = searchParams.get('search')?.toLowerCase() || ''
-    const page = parseInt(searchParams.get('page') || '1')
-    const perPage = parseInt(searchParams.get('per_page') || '5')
+    const page = Number(searchParams.get('page')) || 1
+    const perPage = Number(searchParams.get('per_page')) || 5
 
     const filteredTests = TESTS
       .map(test => ({
@@ -22,7 +22,7 @@ export async function GET(request: Request) {
         test.description.toLowerCase().includes(searchQuery)
       )
 
-    // Пагинация
+    // Пагінація
     const start = (page - 1) * perPage
     const end = start + perPage
     const paginatedTests = filteredTests.slice(start, end)
@@ -32,9 +32,9 @@ export async function GET(request: Request) {
       total: filteredTests.length
     } as ApiResponse<typeof paginatedTests>)
     
-  } catch (error) {
+  } catch {
     return NextResponse.json(
-      { error: 'Internal Server Error' },
+      { error: 'Внутрішня помилка сервера' },
       { status: 500 }
     )
   }
