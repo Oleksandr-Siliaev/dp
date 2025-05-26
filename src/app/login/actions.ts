@@ -7,12 +7,17 @@ import { createClient } from '@/utils/supabase/server';
 
 export async function loginWithGoogle() {
   const supabase = await createClient();
+  let callbackUrl = 'http://localhost:3000/auth/callback';
+
+if (process.env.NODE_ENV === 'production') {
+  callbackUrl = 'https://dp-rosy.vercel.app/auth/callback'; 
+}
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: 'http://localhost:3000/auth/callback',
+      redirectTo: callbackUrl,
     },
-  });
+  });//
 
   console.log('auth data: ', data,error)
 
