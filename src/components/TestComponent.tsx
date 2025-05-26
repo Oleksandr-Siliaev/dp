@@ -27,7 +27,7 @@ const Progress = ({ current, total }: { current: number; total: number }) => (
 
 export function TestComponent({ test }: { test: TestDetails }) {
   const supabase = createClient()
-  const [currentQuestion, setCurrentQuestion] = useState(0)
+  const [currentQuestion, setCurrentQuestion] = useState<number>(0)
   const [answers, setAnswers] = useState<number[]>([])
   const [result, setResult] = useState<{
     score: number
@@ -36,6 +36,33 @@ export function TestComponent({ test }: { test: TestDetails }) {
   const [user, setUser] = useState<User | null>(null)
   const [loading, setLoading] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const [hasHydrated, setHasHydrated] = useState(false)
+
+  // Восстановление прогресса
+  useEffect(() => {
+    const savedProgress = localStorage.getItem(`testProgress_${test.id}`)
+    if (savedProgress) {
+      try {
+        const { savedQuestion, savedAnswers } = JSON.parse(savedProgress)
+        setCurrentQuestion(savedQuestion)
+        setAnswers(savedAnswers)
+      } catch (e) {
+        console.error('Ошибка восстановления прогресса:', e)
+      }
+    }
+    setHasHydrated(true)
+  }, [test.id])
+
+  // Сохранение прогресса
+  useEffect(() => {
+    if (!hasHydrated) return
+    
+    const progress = {
+      savedQuestion: currentQuestion,
+      savedAnswers: answers
+    }
+    localStorage.setItem(`testProgress_${test.id}`, JSON.stringify(progress))
+  }, [currentQuestion, answers, test.id, hasHydrated])
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -84,6 +111,7 @@ export function TestComponent({ test }: { test: TestDetails }) {
 
     const rule = getResultRule(test.id, totalScore)
     setResult({ score: totalScore, rule })
+    localStorage.removeItem(`testProgress_${test.id}`)
 
     const selectedAnswers = test.questions.map((question, index) => ({
       questionId: question.id,
@@ -114,6 +142,10 @@ export function TestComponent({ test }: { test: TestDetails }) {
     }
   }
 
+  if (!hasHydrated) {
+    return <div className="text-center p-4">Загрузка прогресса...</div>
+  }
+
   if (result !== null) {
     const selectedAnswersForRecommendations = test.questions.map((question, index) => ({
       questionId: question.id,
@@ -126,7 +158,6 @@ export function TestComponent({ test }: { test: TestDetails }) {
       <div className="text-center">
         <h2 className="text-2xl font-bold mb-4">Результат теста</h2>
         
-        {/* Общие рекомендации */}
         <div className="mb-6">
           <h3 className="text-lg font-semibold">{result.rule.title}</h3>
           <p className="mt-2 text-gray-600">{result.rule.description}</p>
@@ -142,7 +173,6 @@ export function TestComponent({ test }: { test: TestDetails }) {
           )}
         </div>
 
-        {/* Персональные рекомендации */}
         {personalRecommendations.length > 0 && (
           <div className="mb-6 text-left max-w-md mx-auto">
             <h3 className="text-lg font-semibold mb-2">Персональные рекомендации:</h3>
@@ -150,9 +180,7 @@ export function TestComponent({ test }: { test: TestDetails }) {
               {personalRecommendations.map((rec, i) => (
                 <li 
                   key={i} 
-                  className={`text-sm ${
-                    i === 0 ? 'text-gray-700 font-semibold' : 'text-gray-700'
-                  }`}
+                  className={`text-sm ${i === 0 ? 'font-semibold' : ''} text-gray-700`}
                 >
                   {rec}
                 </li>
@@ -161,26 +189,24 @@ export function TestComponent({ test }: { test: TestDetails }) {
           </div>
         )}
 
-        {!user && (
-          <div className="mb-4 p-3 bg-yellow-100 rounded-lg">
-            <span className="text-yellow-800">
-              Для сохранения результатов необходимо 
-              <Link 
-                href="/login" 
-                className="ml-1 text-blue-600 hover:underline"
-              >
-                войти в систему
-              </Link>
-            </span>
-          </div>
-        )}
+<div className="flex justify-center space-x-48">
+  <button 
+    onClick={() => window.location.href = '/'}
+    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+  >
+    На главную
+  </button>
+  <button
+    onClick={() => {
+      localStorage.removeItem(`testProgress_${test.id}`)
+      window.location.reload()
+    }}
+    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+  >
+    Начать тест заново
+  </button>
+</div>
 
-        <button 
-          onClick={() => window.location.href = '/'}
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
-        >
-          На главную
-        </button>
       </div>
     )
   }
