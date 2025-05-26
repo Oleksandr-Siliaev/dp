@@ -4,19 +4,23 @@
 import { Disclosure } from '@headlessui/react'
 import { ChevronDownIcon } from '@heroicons/react/24/outline'
 
-export default function RecommendationsDisclosure({
-  recommendations,
-  title = "Рекомендации"
-}: {
+interface RecommendationsDisclosureProps {
   recommendations?: string[]
   title?: string
-}) {
+  className?: string
+}
+
+export default function RecommendationsDisclosure({
+  recommendations,
+  title = "Рекомендации",
+  className = ""
+}: RecommendationsDisclosureProps) {
   if (!recommendations || recommendations.length === 0) return null
 
   return (
     <Disclosure>
       {({ open }) => (
-        <div className="mt-4 bg-blue-50 p-3 rounded-lg">
+        <div className={`${className} mt-4 bg-blue-50 p-3 rounded-lg`}>
           <Disclosure.Button 
             className="flex w-full justify-between items-center"
             aria-label={`${open ? 'Скрыть' : 'Показать'} рекомендации`}
