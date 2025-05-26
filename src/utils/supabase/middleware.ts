@@ -16,11 +16,20 @@ export async function updateSession(request: NextRequest) {
           return request.cookies.getAll()
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
+          cookiesToSet.forEach(({ name, value, options }) => {
+            // Виправлений спосіб встановлення cookies
+            request.cookies.set({
+              name,
+              value,
+              ...options
+            })
+            response.cookies.set({
+              name,
+              value,
+              ...options
+            })
+          })
           response = NextResponse.next({ request })
-          cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options)
-          )
         },
       },
     }
@@ -28,21 +37,21 @@ export async function updateSession(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser()
 
-  // Разрешенные пути без авторизации
+  // Дозволені шляхи без авторизації
   const allowedPaths = [
     '/',
     '/login',
     '/auth/callback'
   ]
 
-  // Проверка авторизации для защищенных путей
+  // Перевірка авторизації для захищених шляхів
   if (!user && !allowedPaths.some(path => request.nextUrl.pathname.startsWith(path))) {
     const url = request.nextUrl.clone()
     url.pathname = '/'
     return NextResponse.redirect(url)
   }
 
-  // Проверка прав администратора для /admin
+  // Перевірка прав адміністратора для /admin
   if (user && request.nextUrl.pathname.startsWith('/admin')) {
     const { data: profile } = await supabase
       .from('profiles')
