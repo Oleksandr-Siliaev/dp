@@ -1,4 +1,3 @@
-// app/admin/page.tsx
 'use server'
 
 import { createClient } from '@/utils/supabase/server'
@@ -21,11 +20,11 @@ type AdminTestResult = TestResult & {
   personalRecommendations: string[]
 }
 
-interface PageProps {
-  searchParams?: Record<string, string | string[] | undefined>
-}
-
-export default async function AdminPage({ searchParams }: PageProps) {
+export default async function AdminPage({
+  searchParams
+}: {
+  searchParams?: { [key: string]: string | string[] | undefined }
+}) {
   const supabase = await createClient()
   
   // Authentication check
@@ -41,19 +40,17 @@ export default async function AdminPage({ searchParams }: PageProps) {
 
   if (profile?.role !== 'admin') redirect('/')
 
-  // Обработка параметров запроса
-  const emailParam = searchParams?.email
-  const emailQuery = Array.isArray(emailParam) 
-    ? emailParam[0] || ''
-    : emailParam || ''
+  // Parse search params
+  const emailQuery = Array.isArray(searchParams?.email) 
+    ? searchParams?.email[0] || ''
+    : searchParams?.email || ''
 
-  const pageParam = searchParams?.page
-  const pageString = Array.isArray(pageParam)
-    ? pageParam[0] || '1'
-    : pageParam || '1'
+  const pageString = Array.isArray(searchParams?.page)
+    ? searchParams?.page[0] || '1'
+    : searchParams?.page || '1'
   const currentPage = Math.max(1, parseInt(pageString) || 1)
 
-  // Поиск пользователей
+  // User search
   const { data: users } = await supabase
     .from('profiles')
     .select('user_id, user_email')
@@ -72,7 +69,7 @@ export default async function AdminPage({ searchParams }: PageProps) {
     if (exactUser) {
       selectedUserEmail = exactUser.user_email
       
-      // Получение результатов тестов
+      // Fetch test results
       const { data: results, count } = await supabase
         .from('test_results')
         .select('id, test_id, score, created_at, selected_answers', { 
@@ -86,19 +83,19 @@ export default async function AdminPage({ searchParams }: PageProps) {
         )
 
       if (results) {
-        // Обработка результатов тестов
         userResults = await Promise.all(
           results.map(async (result): Promise<AdminTestResult> => {
             try {
               const config = getTestConfig(result.test_id)
               const rule = getResultRule(result.test_id, result.score)
-              const personalRecs = getPersonalRecommendations(
+const personalRecs = getPersonalRecommendations(
   result.test_id,
   (result.selected_answers || []).map((a: { questionId: number; answerId: number }) => ({
     questionId: a.questionId,
     answerId: a.answerId
-  }))
-)
+  })
+))
+              
               return {
                 ...result,
                 test_title: config.title,
