@@ -12,8 +12,9 @@ export default async function ProfilePage({
 }: {
   searchParams?: { [key: string]: string | string[] | undefined }
 }) {
+  const Params = await searchParams
   const supabase = await createClient()
-  const currentPage = Number(searchParams?.page) || 1
+  const currentPage = Number(Params?.page) || 1
 
   // Аутентифікація
   const { data: { user }, error: authError } = await supabase.auth.getUser()
