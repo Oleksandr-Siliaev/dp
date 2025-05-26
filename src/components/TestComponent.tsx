@@ -6,14 +6,11 @@ import { createClient } from '@/utils/supabase/client'
 import { User } from '@supabase/supabase-js'
 import { TestDetails } from '@/types'
 import { getResultRule, getPersonalRecommendations } from '@/lib/test-results'
-import Link from 'next/link'
-import { Disclosure } from '@headlessui/react'
-import { ChevronDownIcon } from '@heroicons/react/24/outline'
 
 const Progress = ({ current, total }: { current: number; total: number }) => (
   <div className="mb-4">
     <div className="flex justify-between text-sm mb-1">
-      <span>Прогресс:</span>
+      <span>Прогрес:</span>
       <span>{current}/{total}</span>
     </div>
     <div className="h-2 bg-gray-200 rounded">
@@ -38,7 +35,7 @@ export function TestComponent({ test }: { test: TestDetails }) {
   const [errorMessage, setErrorMessage] = useState('')
   const [hasHydrated, setHasHydrated] = useState(false)
 
-  // Восстановление прогресса
+  // Відновлення прогресу
   useEffect(() => {
     const savedProgress = localStorage.getItem(`testProgress_${test.id}`)
     if (savedProgress) {
@@ -47,13 +44,13 @@ export function TestComponent({ test }: { test: TestDetails }) {
         setCurrentQuestion(savedQuestion)
         setAnswers(savedAnswers)
       } catch (e) {
-        console.error('Ошибка восстановления прогресса:', e)
+        console.error('Помилка відновлення прогресу:', e)
       }
     }
     setHasHydrated(true)
   }, [test.id])
 
-  // Сохранение прогресса
+  // Збереження прогресу
   useEffect(() => {
     if (!hasHydrated) return
     
@@ -70,7 +67,7 @@ export function TestComponent({ test }: { test: TestDetails }) {
       setUser(user)
     }
     checkAuth()
-  }, [])
+  }, [supabase.auth]) // Додано залежність
 
   const handleAnswer = (answerIndex: number) => {
     const newAnswers = [...answers]
@@ -85,7 +82,7 @@ export function TestComponent({ test }: { test: TestDetails }) {
 
   const handleNext = () => {
     if (!validateCurrentAnswer()) {
-      setErrorMessage('Пожалуйста, выберите ответ перед продолжением')
+      setErrorMessage('Будь ласка, оберіть відповідь перед продовженням')
       return
     }
     
@@ -99,7 +96,7 @@ export function TestComponent({ test }: { test: TestDetails }) {
 
   const calculateResult = async () => {
     if (!validateCurrentAnswer()) {
-      setErrorMessage('Пожалуйста, ответьте на последний вопрос')
+      setErrorMessage('Будь ласка, дайте відповідь на останнє запитання')
       return
     }
 
@@ -134,8 +131,8 @@ export function TestComponent({ test }: { test: TestDetails }) {
 
         if (error) throw error
       } catch (error) {
-        console.error('Ошибка сохранения:', error)
-        alert('Не удалось сохранить результат')
+        console.error('Помилка збереження:', error)
+        alert('Не вдалося зберегти результат')
       } finally {
         setLoading(false)
       }
@@ -143,7 +140,7 @@ export function TestComponent({ test }: { test: TestDetails }) {
   }
 
   if (!hasHydrated) {
-    return <div className="text-center p-4">Загрузка прогресса...</div>
+    return <div className="text-center p-4">Завантаження прогресу...</div>
   }
 
   if (result !== null) {
@@ -156,14 +153,14 @@ export function TestComponent({ test }: { test: TestDetails }) {
 
     return (
       <div className="text-center">
-        <h2 className="text-2xl font-bold mb-4">Результат теста</h2>
+        <h2 className="text-2xl font-bold mb-4">Результат тесту</h2>
         
         <div className="mb-6">
           <h3 className="text-lg font-semibold">{result.rule.title}</h3>
           <p className="mt-2 text-gray-600">{result.rule.description}</p>
           {result.rule.recommendations?.length > 0 && (
             <div className="mt-4 text-left max-w-md mx-auto">
-              <h4 className="font-medium mb-2">Общие рекомендации:</h4>
+              <h4 className="font-medium mb-2">Загальні рекомендації:</h4>
               <ul className="list-disc pl-5 space-y-1">
                 {result.rule.recommendations.map((rec, i) => (
                   <li key={i} className="text-sm text-gray-700">{rec}</li>
@@ -175,7 +172,7 @@ export function TestComponent({ test }: { test: TestDetails }) {
 
         {personalRecommendations.length > 0 && (
           <div className="mb-6 text-left max-w-md mx-auto">
-            <h3 className="text-lg font-semibold mb-2">Персональные рекомендации:</h3>
+            <h3 className="text-lg font-semibold mb-2">Персональні рекомендації:</h3>
             <ul className="list-disc pl-5 space-y-1">
               {personalRecommendations.map((rec, i) => (
                 <li 
@@ -189,24 +186,23 @@ export function TestComponent({ test }: { test: TestDetails }) {
           </div>
         )}
 
-<div className="flex justify-center space-x-48">
-  <button 
-    onClick={() => window.location.href = '/'}
-    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
-  >
-    На главную
-  </button>
-  <button
-    onClick={() => {
-      localStorage.removeItem(`testProgress_${test.id}`)
-      window.location.reload()
-    }}
-    className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
-  >
-    Начать тест заново
-  </button>
-</div>
-
+        <div className="flex justify-center space-x-48">
+          <button 
+            onClick={() => window.location.href = '/'}
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+          >
+            На головну
+          </button>
+          <button
+            onClick={() => {
+              localStorage.removeItem(`testProgress_${test.id}`)
+              window.location.reload()
+            }}
+            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+          >
+            Почати тест знову
+          </button>
+        </div>
       </div>
     )
   }
@@ -260,11 +256,11 @@ export function TestComponent({ test }: { test: TestDetails }) {
           disabled={loading}
         >
           {loading ? (
-            <span className="animate-pulse">Сохранение...</span>
+            <span className="animate-pulse">Збереження...</span>
           ) : currentQuestion < test.questions.length - 1 ? (
-            'Далее →'
+            'Далі →'
           ) : (
-            'Завершить тест'
+            'Завершити тест'
           )}
         </button>
       </div>
