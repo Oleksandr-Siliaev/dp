@@ -162,7 +162,7 @@ export function TestComponent({ test }: { test: TestDetails }) {
               <h4 className="font-medium mb-2">Загальний результат:</h4>
               <ul className="list-disc pl-5 space-y-1">
                 {result.rule.recommendations.map((rec, i) => (
-                  <li key={i} className="text-sm text-gray-500">{rec}</li>
+                  <li key={i} className="text-sm text-white">{rec}</li>
                 ))}
               </ul>
             </div>
