@@ -20,14 +20,14 @@ export default function RecommendationsDisclosure({
   return (
     <Disclosure>
       {({ open }) => (
-        <div className={`${className} mt-4 bg-blue-50 p-3 rounded-lg`}>
+        <div className={`${className} mt-4 bg-blue-700 p-3 rounded-lg`}>
           <Disclosure.Button 
             className="flex w-full justify-between items-center"
             aria-label={`${open ? 'Скрыть' : 'Показать'} рекомендации`}
           >
-            <h4 className="font-medium text-blue-800">{title}</h4>
+            <h4 className="font-medium white">{title}</h4>
             <ChevronDownIcon
-              className={`h-5 w-5 text-blue-800 transition-transform duration-200 ${
+              className={`h-5 w-5 text-white transition-transform duration-200 ${
                 open ? 'rotate-180' : ''
               }`}
               aria-hidden="true"
@@ -42,7 +42,7 @@ export default function RecommendationsDisclosure({
               {recommendations.map((rec, i) => (
                 <li 
                   key={i} 
-                  className="text-blue-700 text-sm leading-6"
+                  className="text-white text-sm leading-6"
                   role="listitem"
                 >
                   {rec}

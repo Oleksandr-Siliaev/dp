@@ -44,9 +44,9 @@ export function Navbar() {
   }
 
  return (
-    <nav className="bg-white shadow-sm">
+    <nav className="bg-gray-300 shadow-sm">
       <div className="container mx-auto px-4 py-3 flex flex-col md:flex-row gap-4 md:gap-0 items-center">
-        <Link href="/" className="text-xl font-bold md:mr-4 text-black">Тесты</Link>
+        <Link href="/" className="text-xl font-bold md:mr-4 text-black">Тести</Link>
 
         <div className="flex-1"></div>
 
@@ -58,7 +58,7 @@ export function Navbar() {
                   href="/admin" 
                   className="text-black hover:text-blue-500 hidden md:block"
                 >
-                  Админка
+                  Адмінка
                 </Link>
               )}
               
@@ -66,19 +66,19 @@ export function Navbar() {
                 href="/profile" 
                 className="text-black hover:text-blue-500"
               >
-                Профиль
+                Профіль
               </Link>
               
               <button 
                 onClick={handleLogout}
                 className="text-black hover:text-red-500"
               >
-                Выйти
+                Вийти
               </button>
             </>
           ) : (
             <Link href="/login" className="text-black hover:text-blue-500">
-              Войти
+              Увійти
             </Link>
           )}
         </div>

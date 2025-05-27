@@ -22,7 +22,7 @@ export default function TestResultsList({ results }: Props) {
       <div className="mb-6">
         <input
           type="text"
-          placeholder="Поиск по названию теста..."
+          placeholder="Пошук по назві тесту..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
@@ -41,12 +41,9 @@ export default function TestResultsList({ results }: Props) {
               <div>
                 <h3 className="font-semibold text-lg">
                   {result.test_title}
-                  <span className="ml-2 text-sm font-normal text-gray-500">
-                    ({result.score} баллов)
-                  </span>
                 </h3>
                 <p className="text-gray-500 text-sm mt-1">
-                  {new Date(result.created_at).toLocaleDateString('ru-RU', {
+                  {new Date(result.created_at).toLocaleDateString('uk-UA', {
                     day: 'numeric',
                     month: 'long',
                     year: 'numeric'
@@ -56,10 +53,10 @@ export default function TestResultsList({ results }: Props) {
             </div>
 
             <div className="mt-3">
-              <h4 className="font-medium text-gray-800">
+              <h4 className="font-medium text-gray-400">
                 {result.result_rule.title}
               </h4>
-              <p className="text-gray-600 mt-1">
+              <p className="text-gray-400 mt-1">
                 {result.result_rule.description}
               </p>
             </div>
@@ -67,7 +64,7 @@ export default function TestResultsList({ results }: Props) {
             {result.result_rule.recommendations?.length > 0 && (
               <RecommendationsDisclosure 
                 recommendations={result.result_rule.recommendations} 
-                title="Общие рекомендации"
+                title="Загальні рекомендації"
               />
             )}
 
@@ -76,7 +73,7 @@ export default function TestResultsList({ results }: Props) {
             result.personalRecommendations.length > 0 && (
               <RecommendationsDisclosure 
                 recommendations={result.personalRecommendations}
-                title="Персональные рекомендации"
+                title="Персональні рекомендації"
               />
             )}
           </div>
