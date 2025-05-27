@@ -36,7 +36,7 @@ export function Navbar() {
     }
     
     checkAuth()
-  }, [supabase]) // Добавили supabase в зависимости
+  }, [supabase]) 
 
   const handleLogout = async () => {
     await supabase.auth.signOut()

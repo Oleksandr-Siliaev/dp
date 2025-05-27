@@ -20,7 +20,6 @@ export async function GET(request: Request) {
           return NextResponse.redirect(`${origin}/error`)
         }
 
-        // Проверяем существование профиля
         const { count, error: countError } = await supabase
           .from('profiles')
           .select('*', { count: 'exact', head: true })
@@ -31,7 +30,7 @@ export async function GET(request: Request) {
           return NextResponse.redirect(`${origin}/error`)
         }
 
-        // Создаем профиль если не существует
+
         if (count === 0) {
           const { error: insertError } = await supabase
             .from('profiles')

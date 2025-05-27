@@ -1,7 +1,7 @@
 // components/TestResultsList.tsx
 'use client'
 
-import { useState } from 'react' // Добавляем импорт useState
+import { useState } from 'react' 
 import RecommendationsDisclosure from './RecommendationsDisclosure'
 import { TestResult } from '@/types'
 
@@ -18,7 +18,6 @@ export default function TestResultsList({ results }: Props) {
 
   return (
     <div>
-      {/* Поисковая строка без изменений */}
       <div className="mb-6 flex justify-center">
   <div className="w-full max-w-2xl px-4">
     <input
@@ -32,8 +31,6 @@ export default function TestResultsList({ results }: Props) {
     />
   </div>
 </div>
-
-      {/* Измененная сетка результатов */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {filteredResults.length === 0 ? (
           <div className="col-span-2 text-center text-gray-500 py-4">
@@ -46,7 +43,6 @@ export default function TestResultsList({ results }: Props) {
               className="h-full border p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow"
             >
               <div className="flex flex-col h-full">
-                {/* Заголовок */}
                 <div className="flex justify-between items-start mb-4">
                   <div>
                     <h3 className="font-semibold text-lg mb-2">
@@ -57,8 +53,6 @@ export default function TestResultsList({ results }: Props) {
                     </p>
                   </div>
                 </div>
-
-                {/* Контент */}
                 <div className="flex-1 space-y-4">
                   <div>
                     <h4 className="font-medium text-gray-400 mb-1">
@@ -68,8 +62,6 @@ export default function TestResultsList({ results }: Props) {
                       {result.result_rule.description}
                     </p>
                   </div>
-
-                  {/* Рекомендации */}
                   {result.result_rule.recommendations?.length > 0 && (
                     <RecommendationsDisclosure 
                       recommendations={result.result_rule.recommendations} 
@@ -77,7 +69,6 @@ export default function TestResultsList({ results }: Props) {
                       className="bg-blue-50"
                     />
                   )}
-
                   {result.personalRecommendations && 
                   result.personalRecommendations.length > 0 && (
                     <RecommendationsDisclosure 

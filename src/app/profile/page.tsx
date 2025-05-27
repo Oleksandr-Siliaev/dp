@@ -16,18 +16,16 @@ export default async function ProfilePage({
   const supabase = await createClient()
   const currentPage = Number(Params?.page) || 1
 
-  // Аутентифікація
   const { data: { user }, error: authError } = await supabase.auth.getUser()
   if (authError || !user) redirect('/login')
 
-  // Отримання профілю
   const { data: profile } = await supabase
     .from('profiles')
     .select('user_email, user_name')
     .eq('user_id', user.id)
     .single()
 
-  // Запит результатів з пагінацією
+ 
   const { data: results, count } = await supabase
     .from('test_results')
     .select('id, test_id, score, created_at, selected_answers', { count: 'exact' })
@@ -35,7 +33,6 @@ export default async function ProfilePage({
     .order('created_at', { ascending: false })
     .range((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE - 1)
 
-  // Обробка результатів
   const formattedResults = results?.map(result => ({
     id: result.id,
     test_id: result.test_id,
@@ -53,7 +50,7 @@ export default async function ProfilePage({
 
   return (
     <div className="container mx-auto p-4">
-      {/* Секція профілю */}
+
       <div className="mb-8 border-b pb-6 text-center">
         <h1 className="text-2xl font-bold mb-4">Ваш профіль</h1>
         <div className="space-y-2">
@@ -62,10 +59,9 @@ export default async function ProfilePage({
         </div>
       </div>
 
-      {/* Секція результатів з пошуком */}
+
       <TestResultsList results={formattedResults} />
-      
-      {/* Пагінація */}
+
       <div className="mt-6 flex justify-center">
         <PaginationControls
           currentPage={currentPage}
@@ -76,7 +72,6 @@ export default async function ProfilePage({
   )
 }
 
-// Допоміжна функція для отримання даних тесту
 function getTestDetails(testId: string, score: number, selectedAnswers?: Array<{ 
   questionId: number
   answerId: number 

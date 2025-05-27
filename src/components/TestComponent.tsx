@@ -8,14 +8,14 @@ import { TestDetails } from '@/types'
 import { getResultRule, getPersonalRecommendations } from '@/lib/test-results'
 
 const Progress = ({ current, total }: { current: number; total: number }) => (
-  <div className="mb-4">
-    <div className="flex justify-between text-sm mb-1">
-      <span>Прогрес:</span>
-      <span>{current}/{total}</span>
+  <div className="mb-6">
+    <div className="flex justify-between text-sm mb-2">
+      <span className="text-gray-600">Прогрес:</span>
+      <span className="text-gray-600">{current}/{total}</span>
     </div>
-    <div className="h-2 bg-gray-200 rounded">
+    <div className="h-2 bg-gray-100 rounded-full">
       <div 
-        className="h-full bg-blue-500 rounded transition-all duration-300"
+        className="h-full bg-blue-600 rounded-full transition-all duration-300"
         style={{ width: `${(current / total) * 100}%` }}
       />
     </div>
@@ -35,7 +35,6 @@ export function TestComponent({ test }: { test: TestDetails }) {
   const [errorMessage, setErrorMessage] = useState('')
   const [hasHydrated, setHasHydrated] = useState(false)
 
-  // Відновлення прогресу
   useEffect(() => {
     const savedProgress = localStorage.getItem(`testProgress_${test.id}`)
     if (savedProgress) {
@@ -50,7 +49,6 @@ export function TestComponent({ test }: { test: TestDetails }) {
     setHasHydrated(true)
   }, [test.id])
 
-  // Збереження прогресу
   useEffect(() => {
     if (!hasHydrated) return
     
@@ -67,7 +65,7 @@ export function TestComponent({ test }: { test: TestDetails }) {
       setUser(user)
     }
     checkAuth()
-  }, [supabase.auth]) // Додано залежність
+  }, [supabase.auth]) 
 
   const handleAnswer = (answerIndex: number) => {
     const newAnswers = [...answers]
@@ -152,12 +150,13 @@ export function TestComponent({ test }: { test: TestDetails }) {
     const personalRecommendations = getPersonalRecommendations(test.id, selectedAnswersForRecommendations)
 
     return (
-      <div className="text-center">
-        <h2 className="text-2xl font-bold mb-4">Результат тесту</h2>
+      <div className="flex justify-center items-start min-h-screen pt-8">
+    <div className="w-full max-w-3xl mx-4  border rounded-xl shadow-sm p-6">
+      <h2 className="text-2xl font-bold mb-6 text-center">Результат тесту</h2>
         
         <div className="mb-6">
-          <h3 className="text-lg font-semibold">{result.rule.title}</h3>
-          <p className="mt-2 text-gray-600">{result.rule.description}</p>
+          <h3 className="text-lg text-center font-semibold">{result.rule.title}</h3>
+          <p className="mt-2 text-center text-gray-600">{result.rule.description}</p>
           {result.rule.recommendations?.length > 0 && (
             <div className="mt-4 text-left max-w-md mx-auto">
               <h4 className="font-medium mb-2">Загальні рекомендації:</h4>
@@ -186,84 +185,94 @@ export function TestComponent({ test }: { test: TestDetails }) {
           </div>
         )}
 
-        <div className="flex justify-center space-x-48">
-          <button 
-            onClick={() => window.location.href = '/'}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
-          >
-            На головну
-          </button>
-          <button
-            onClick={() => {
-              localStorage.removeItem(`testProgress_${test.id}`)
-              window.location.reload()
-            }}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
-          >
-            Почати тест знову
-          </button>
-        </div>
+<div className="flex flex-col md:flex-row justify-center gap-4 mt-8">
+        <button 
+          onClick={() => window.location.href = '/'}
+          className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          На головну
+        </button>
+        <button
+          onClick={() => {
+            localStorage.removeItem(`testProgress_${test.id}`)
+            window.location.reload()
+          }}
+          className="bg-gray-600 px-6 py-3 rounded-lg hover:bg-gray-500 transition-colors"
+        >
+          Почати знову
+        </button>
       </div>
-    )
+    </div>
+  </div>
+)
   }
 
-  return (
-    <div>
-      <Progress 
-        current={currentQuestion + 1} 
-        total={test.questions.length} 
-      />
+
+ return (
+  <div className="flex justify-center items-start min-h-screen pt-8">
+    <div className="w-full max-w-3xl mx-4 border rounded-xl shadow-sm p-6">
+      
       
       {errorMessage && (
-        <div className="mb-4 p-2 bg-red-100 text-red-600 rounded">
+        <div className="mb-4 p-3 bg-red-100 text-red-600 rounded-lg">
           {errorMessage}
         </div>
       )}
 
-      <h3 className="text-xl font-semibold mb-4">
-        {test.questions[currentQuestion].text}
-      </h3>
+      <div className="space-y-6">
+        <h3 className="text-2xl font-semibold text-center">
+          {test.questions[currentQuestion].text}
+        </h3>
 
-      <div className="space-y-2">
-        {test.questions[currentQuestion].answers.map((answer, idx) => (
-          <button
-            key={answer.id}
-            onClick={() => handleAnswer(idx)}
-            className={`block w-full p-2 text-left rounded border transition-all ${
-              answers[currentQuestion] === idx 
-                ? 'bg-blue-600 border-blue-600 scale-[0.98]' 
-                : 'hover:bg-gray-600 border-transparent'
-            }`}
-          >
-            {answer.text}
-          </button>
-        ))}
-      </div>
-
-      <div className="mt-6 flex justify-between">
-        {currentQuestion > 0 && (
-          <button
-            onClick={() => setCurrentQuestion(prev => prev - 1)}
-            className="bg-gray-500 px-4 py-2 rounded hover:bg-gray-400 transition-colors"
-          >
-            Назад
-          </button>
-        )}
-        
-        <button
-          onClick={handleNext}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors ml-auto"
-          disabled={loading}
-        >
-          {loading ? (
-            <span className="animate-pulse">Збереження...</span>
-          ) : currentQuestion < test.questions.length - 1 ? (
-            'Далі →'
-          ) : (
-            'Завершити тест'
+        <div className="grid gap-3">
+          {test.questions[currentQuestion].answers.map((answer, idx) => (
+            <button
+              key={answer.id}
+              onClick={() => handleAnswer(idx)}
+              className={`
+                p-4 text-left rounded-lg border transition-all
+                ${answers[currentQuestion] === idx 
+                  ? 'bg-blue-600 border-blue-500 scale-[0.98]' 
+                  : 'hover:bg-gray-600 border-gray-200'}
+              `}
+            >
+              {answer.text}
+            </button>
+          ))}
+        </div>
+          <Progress 
+        current={currentQuestion + 1} 
+        total={test.questions.length} 
+      />
+        <div className="flex justify-between gap-4">
+          {currentQuestion > 0 && (
+            <button
+              onClick={() => setCurrentQuestion(prev => prev - 1)}
+              className="bg-gray-500 px-6 py-3 rounded-lg hover:bg-gray-400 transition-colors"
+            >
+              Назад
+            </button>
           )}
-        </button>
+          
+          <button
+            onClick={handleNext}
+            className={`
+              bg-blue-600 text-white px-8 py-3 rounded-lg ml-auto
+              hover:bg-blue-700 transition-colors
+              ${loading ? 'opacity-70 cursor-wait' : ''}
+            `}
+          >
+            {loading ? (
+              <span className="animate-pulse">Збереження...</span>
+            ) : currentQuestion < test.questions.length - 1 ? (
+              'Далі →'
+            ) : (
+              'Завершити тест'
+            )}
+          </button>
+        </div>
       </div>
     </div>
-  )
+  </div>
+)
 }

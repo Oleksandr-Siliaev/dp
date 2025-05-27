@@ -17,7 +17,6 @@ export async function updateSession(request: NextRequest) {
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value, options }) => {
-            // Виправлений спосіб встановлення cookies
             request.cookies.set({
               name,
               value,
@@ -37,21 +36,18 @@ export async function updateSession(request: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser()
 
-  // Дозволені шляхи без авторизації
   const allowedPaths = [
     '/',
     '/login',
     '/auth/callback'
   ]
 
-  // Перевірка авторизації для захищених шляхів
   if (!user && !allowedPaths.some(path => request.nextUrl.pathname.startsWith(path))) {
     const url = request.nextUrl.clone()
     url.pathname = '/'
     return NextResponse.redirect(url)
   }
 
-  // Перевірка прав адміністратора для /admin
   if (user && request.nextUrl.pathname.startsWith('/admin')) {
     const { data: profile } = await supabase
       .from('profiles')

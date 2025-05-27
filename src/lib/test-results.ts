@@ -43,22 +43,20 @@ export function getPersonalRecommendations(testId: string, selectedAnswers: Sele
   const test = TESTS.find(t => t.id === testId)
   if (!test) return []
 
-  // Собираем рекомендации с информацией о приоритете
   const recommendationsWithPriority = selectedAnswers.flatMap(answer => {
     const question = test.questions.find(q => q.id === answer.questionId)
     const answerData = question?.answers.find(a => a.id === answer.answerId)
     
     return answerData?.recommendations?.map(rec => ({
       text: rec,
-      priority: answerData.score // Используем score ответа как приоритет
+      priority: answerData.score 
     })) || []
   })
 
-  // Сортируем по приоритету и удаляем дубликаты
   const uniqueRecs = Array.from(new Map(
     recommendationsWithPriority
-      .sort((a, b) => b.priority - a.priority) // Сортировка по убыванию
-      .map(item => [item.text, item]) // Удаление дубликатов
+      .sort((a, b) => b.priority - a.priority) 
+      .map(item => [item.text, item]) 
   ).values())
 
   return uniqueRecs.map(rec => rec.text)

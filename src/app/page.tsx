@@ -25,7 +25,7 @@ export default function Home() {
       setTests(data || [])
       setTotalPages(Math.ceil(total / ITEMS_PER_PAGE))
     } catch (error) {
-      console.error('Ошибка загрузки тестов:', error)
+      console.error('Помилка завантаження тестів:', error)
     } finally {
       setLoading(false)
     }
@@ -50,7 +50,7 @@ export default function Home() {
     <h1 className="text-3xl font-bold mb-8 text-center">Доступні тести</h1>
     
 <div className="mb-8 flex justify-center">
-      <div className="w-full max-w-2xl px-4"> {/* Добавляем ограничение по ширине */}
+      <div className="w-full max-w-2xl px-4"> 
         <input
           type="text"
           placeholder="Пошук по назві тесту..."
@@ -79,8 +79,6 @@ export default function Home() {
             <TestCard key={test.id} test={test} />
           ))}
         </div>
-
-          {/* Пагинация */}
           <div className="flex justify-center">
             <PaginationControls
               currentPage={currentPage}

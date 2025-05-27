@@ -14,7 +14,6 @@ export default async function TestPage({
     redirect('/')
   }
 
-  // Клиент создается в TestComponent при необходимости
   return (
     <div className="container mx-auto p-4">
       <TestComponent test={test} />

@@ -20,7 +20,6 @@ export async function GET(
       )
     }
 
-    // Формуємо повний об'єкт TestDetails
     const responseData: TestDetails = {
       id: test.id,
       title: test.title,
