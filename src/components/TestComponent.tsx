@@ -10,8 +10,8 @@ import { getResultRule, getPersonalRecommendations } from '@/lib/test-results'
 const Progress = ({ current, total }: { current: number; total: number }) => (
   <div className="mb-6">
     <div className="flex justify-between text-sm mb-2">
-      <span className="text-gray-600">Прогрес:</span>
-      <span className="text-gray-600">{current}/{total}</span>
+      <span className="text-gray-400">Прогрес:</span>
+      <span className="text-gray-400">{current}/{total}</span>
     </div>
     <div className="h-2 bg-gray-100 rounded-full">
       <div 
@@ -156,13 +156,13 @@ export function TestComponent({ test }: { test: TestDetails }) {
         
         <div className="mb-6">
           <h3 className="text-lg text-center font-semibold">{result.rule.title}</h3>
-          <p className="mt-2 text-center text-gray-600">{result.rule.description}</p>
+          <p className="mt-2 text-center text-gray-500">{result.rule.description}</p>
           {result.rule.recommendations?.length > 0 && (
             <div className="mt-4 text-left max-w-md mx-auto">
               <h4 className="font-medium mb-2">Загальні рекомендації:</h4>
               <ul className="list-disc pl-5 space-y-1">
                 {result.rule.recommendations.map((rec, i) => (
-                  <li key={i} className="text-sm text-gray-700">{rec}</li>
+                  <li key={i} className="text-sm text-gray-500">{rec}</li>
                 ))}
               </ul>
             </div>
@@ -176,7 +176,7 @@ export function TestComponent({ test }: { test: TestDetails }) {
               {personalRecommendations.map((rec, i) => (
                 <li 
                   key={i} 
-                  className={`text-sm ${i === 0 ? 'font-semibold' : ''} text-gray-700`}
+                  className={`text-sm ${i === 0 ? 'font-semibold' : ''} text-gray-500`}
                 >
                   {rec}
                 </li>
