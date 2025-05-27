@@ -18,7 +18,7 @@ export default function TestResultsList({ results }: Props) {
 
   return (
     <div>
-      {/* Поисковая строка */}
+      {/* Поисковая строка без изменений */}
       <div className="mb-6">
         <input
           type="text"
@@ -29,56 +29,65 @@ export default function TestResultsList({ results }: Props) {
         />
       </div>
 
-      {/* Список результатов */}
-      {filteredResults.length === 0 ? (
-        <div className="text-center text-gray-500 py-4">
-          Ничего не найдено
-        </div>
-      ) : (
-        filteredResults.map((result) => (
-          <div key={result.id} className="border p-4 rounded-lg mb-4">
-            <div className="flex justify-between items-start mb-2">
-              <div>
-                <h3 className="font-semibold text-lg">
-                  {result.test_title}
-                </h3>
-                <p className="text-gray-500 text-sm mt-1">
-                  {new Date(result.created_at).toLocaleDateString('uk-UA', {
-                    day: 'numeric',
-                    month: 'long',
-                    year: 'numeric'
-                  })}
-                </p>
+      {/* Измененная сетка результатов */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {filteredResults.length === 0 ? (
+          <div className="col-span-2 text-center text-gray-500 py-4">
+            Нічого не знайдено
+          </div>
+        ) : (
+          filteredResults.map((result) => (
+            <div 
+              key={result.id} 
+              className="h-full border p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow"
+            >
+              <div className="flex flex-col h-full">
+                {/* Заголовок */}
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h3 className="font-semibold text-lg mb-2">
+                      {result.test_title}
+                    </h3>
+                    <p className="text-gray-500 text-sm">
+                      {new Date(result.created_at).toLocaleDateString('uk-UA')}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Контент */}
+                <div className="flex-1 space-y-4">
+                  <div>
+                    <h4 className="font-medium text-gray-400 mb-1">
+                      {result.result_rule.title}
+                    </h4>
+                    <p className="text-gray-400 text-sm line-clamp-3">
+                      {result.result_rule.description}
+                    </p>
+                  </div>
+
+                  {/* Рекомендации */}
+                  {result.result_rule.recommendations?.length > 0 && (
+                    <RecommendationsDisclosure 
+                      recommendations={result.result_rule.recommendations} 
+                      title="Загальні рекомендації"
+                      className="bg-blue-50"
+                    />
+                  )}
+
+                  {result.personalRecommendations && 
+                  result.personalRecommendations.length > 0 && (
+                    <RecommendationsDisclosure 
+                      recommendations={result.personalRecommendations}
+                      title="Персональні рекомендації"
+                      className="bg-blue-600"
+                    />
+                  )}
+                </div>
               </div>
             </div>
-
-            <div className="mt-3">
-              <h4 className="font-medium text-gray-400">
-                {result.result_rule.title}
-              </h4>
-              <p className="text-gray-400 mt-1">
-                {result.result_rule.description}
-              </p>
-            </div>
-
-            {result.result_rule.recommendations?.length > 0 && (
-              <RecommendationsDisclosure 
-                recommendations={result.result_rule.recommendations} 
-                title="Загальні рекомендації"
-              />
-            )}
-
-            {/* Исправление для второй ошибки */}
-            {result.personalRecommendations && 
-            result.personalRecommendations.length > 0 && (
-              <RecommendationsDisclosure 
-                recommendations={result.personalRecommendations}
-                title="Персональні рекомендації"
-              />
-            )}
-          </div>
-        ))
-      )}
+          ))
+        )}
+      </div>
     </div>
   )
 }

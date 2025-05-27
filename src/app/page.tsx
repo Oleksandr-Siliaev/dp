@@ -6,7 +6,7 @@ import { TestCard } from '@/components/TestCard'
 import { TestSummary } from '@/types'
 import { PaginationControls } from '@/components/PaginationControls'
 
-const ITEMS_PER_PAGE = 5
+const ITEMS_PER_PAGE = 10
 
 export default function Home() {
   const [tests, setTests] = useState<TestSummary[]>([])
@@ -46,35 +46,35 @@ export default function Home() {
   }
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-6">Доступні тести</h1>
-      
-      <div className="mb-6">
-        <input
-          type="text"
-          placeholder="Пошук по назві тесту..."
-          value={searchQuery}
-          onChange={(e) => {
-            setSearchQuery(e.target.value)
-            setCurrentPage(1) 
-          }}
-          className="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
+  <div className="container mx-auto p-4">
+    <h1 className="text-3xl font-bold mb-6">Доступні тести</h1>
+    
+    <div className="mb-6">
+      <input
+        type="text"
+        placeholder="Пошук по назві тесту..."
+        value={searchQuery}
+        onChange={(e) => {
+          setSearchQuery(e.target.value)
+          setCurrentPage(1) 
+        }}
+        className="w-full px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+    </div>
 
-      {loading ? (
-        <div className="animate-pulse space-y-4">
-          {[...Array(ITEMS_PER_PAGE)].map((_, i) => (
-            <div key={i} className="h-32 bg-gray-100 rounded-lg" />
+    {loading ? (
+      <div className="animate-pulse grid grid-cols-1 md:grid-cols-2 gap-6">
+        {[...Array(ITEMS_PER_PAGE)].map((_, i) => (
+          <div key={i} className="h-48 bg-gray-100 rounded-lg" />
+        ))}
+      </div>
+    ) : (
+      <>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          {tests.map(test => (
+            <TestCard key={test.id} test={test} />
           ))}
         </div>
-      ) : (
-        <>
-          <div className="grid gap-4 mb-6">
-            {tests.map(test => (
-              <TestCard key={test.id} test={test} />
-            ))}
-          </div>
 
           {/* Пагинация */}
           <div className="flex justify-center">
