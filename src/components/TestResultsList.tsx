@@ -19,15 +19,19 @@ export default function TestResultsList({ results }: Props) {
   return (
     <div>
       {/* Поисковая строка без изменений */}
-      <div className="mb-6">
-        <input
-          type="text"
-          placeholder="Пошук по назві тесту..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-        />
-      </div>
+      <div className="mb-6 flex justify-center">
+  <div className="w-full max-w-2xl px-4">
+    <input
+      type="text"
+      placeholder="Пошук по назві тесту..."
+      value={searchQuery}
+      onChange={(e) => setSearchQuery(e.target.value)}
+      className="w-full px-6 py-3 rounded-xl border-2 border-gray-200 
+                focus:outline-none focus:border-blue-500 focus:ring-2 
+                focus:ring-blue-200 transition-all"
+    />
+  </div>
+</div>
 
       {/* Измененная сетка результатов */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
