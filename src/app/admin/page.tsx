@@ -204,7 +204,7 @@ const personalRecs = getPersonalRecommendations(
 
                       <RecommendationsDisclosure 
                         recommendations={result.result_rule.recommendations}
-                        title="Загальні рекомендації"
+                        title="Результат"
                       />
                       
                       <RecommendationsDisclosure 

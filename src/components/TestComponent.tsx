@@ -159,7 +159,7 @@ export function TestComponent({ test }: { test: TestDetails }) {
           <p className="mt-2 text-center text-gray-500">{result.rule.description}</p>
           {result.rule.recommendations?.length > 0 && (
             <div className="mt-4 text-left max-w-md mx-auto">
-              <h4 className="font-medium mb-2">Загальні рекомендації:</h4>
+              <h4 className="font-medium mb-2">Результат:</h4>
               <ul className="list-disc pl-5 space-y-1">
                 {result.rule.recommendations.map((rec, i) => (
                   <li key={i} className="text-sm text-gray-500">{rec}</li>

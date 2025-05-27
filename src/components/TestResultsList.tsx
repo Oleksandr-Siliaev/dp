@@ -65,7 +65,7 @@ export default function TestResultsList({ results }: Props) {
                   {result.result_rule.recommendations?.length > 0 && (
                     <RecommendationsDisclosure 
                       recommendations={result.result_rule.recommendations} 
-                      title="Загальні рекомендації"
+                      title="Реузльтат"
                       className="bg-blue-50"
                     />
                   )}
