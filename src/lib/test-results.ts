@@ -1,6 +1,7 @@
 // src/lib/test-results.ts
 import depressionTest from '@/config/tests/depression-test.json'
 import anxietyTest from '@/config/tests/anxiety-test.json'
+import panicDisorderTest from '@/config/tests/panic-disorder-test.json'
 import { TESTS } from '@/app/api/tests/data/tests'
 
 type TestRule = {
@@ -24,7 +25,8 @@ type SelectedAnswer = {
 
 const tests: Record<string, TestConfig> = {
   'depression-test': depressionTest,
-  'anxiety-test': anxietyTest
+  'anxiety-test': anxietyTest,
+  'panic-disorder-test': panicDisorderTest
 }
 
 export function getTestConfig(testId: string): TestConfig {
