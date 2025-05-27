@@ -4,26 +4,26 @@ import { TestDetails } from '@/types'
 export const TESTS: TestDetails[] = [
   {
     id: 'depression-test',
-    title: 'Тест на депрессию',
-    description: 'Оценка эмоционального состояния',
-    questionsCount: 5, // Добавляем новое поле
+    title: 'Тест на депресію',
+    description: 'Оцінка емоційного стану',
+    questionsCount: 5, 
     questions: [
       {
         id: 1,
-        text: "Как часто вы чувствуете грусть?",
+        text: "Як часто ви відчуваєте смуток?",
         answers: [
-          { id: 1, text: "Никогда", score: 0 },
-          { id: 2, text: "Иногда", score: 1 },
+          { id: 1, text: "Ніколи", score: 0 },
+          { id: 2, text: "Інколи", score: 1 },
           { id: 3, text: "Часто", score: 2 }
         ]
       },
         {
             id: 2,
-            text: "Как часто вы теряете интерес к вещам, которые раньше вам нравились?",
+            text: "Як часто ви втрачаєте інтерес до речей, які раніше вам подобалися?",
             answers: [
-            { id: 1, text: "Никогда", score: 0,recommendations: ["0"] },
-            { id: 2, text: "Иногда", score: 1,recommendations: ["1"] },
-            { id: 3, text: "Часто", score: 2,recommendations: ["2"] }
+            { id: 1, text: "Ніколи", score: 0 },
+            { id: 2, text: "Інколи", score: 1 },
+            { id: 3, text: "Часто", score: 2 }
             ]
         },
         {
@@ -57,8 +57,8 @@ export const TESTS: TestDetails[] = [
   },
   {
     id: 'anxiety-test',
-    title: 'Тест на тревожность',
-    description: 'Оценка эмоционального состояния',
+    title: 'Тест на тривожність',
+    description: 'Оцінка рівня тривожності',
     questionsCount: 5,
     questions: [
       {

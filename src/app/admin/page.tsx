@@ -94,7 +94,6 @@ const personalRecs = getPersonalRecommendations(
   (result.selected_answers || []).map((a: SelectedAnswer) => ({
     questionId: a.questionId,
     answerId: a.answerId
-    // Если функция использует только эти поля, остальные можно не передавать
   }))
 )
               
@@ -135,13 +134,13 @@ const personalRecs = getPersonalRecommendations(
         <h1 className="text-2xl font-bold">Адмін-панель</h1>
         <Link
           href="/admin/add-test"
-          className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
+          className="bg-blue-600 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
         >
           Створити новий тест
         </Link>
       </div>
 
-      <div className="mb-8 bg-white p-4 rounded-lg shadow">
+      <div className="mb-8 bg-gray-200 p-4 rounded-lg shadow">
         <form className="space-y-4">
           <div className="relative">
             <input
@@ -150,7 +149,7 @@ const personalRecs = getPersonalRecommendations(
               placeholder="Пошук користувача за email..."
               defaultValue={emailQuery}
               list="user-emails"
-              className="w-full p-2 border rounded-lg"
+              className="w-full p-2 border rounded-lg text-black"
             />
             <datalist id="user-emails">
               {users?.map(user => (
@@ -160,7 +159,7 @@ const personalRecs = getPersonalRecommendations(
             
             <button
               type="submit"
-              className="absolute right-2 top-2 bg-gray-100 px-3 py-1 rounded"
+              className="absolute right-2 top-2 bg-blue-600 px-1 py-1 rounded"
             >
               Знайти
             </button>
@@ -169,12 +168,12 @@ const personalRecs = getPersonalRecommendations(
 
         {selectedUserEmail && (
           <div className="mt-6">
-            <h2 className="text-xl font-semibold mb-4">
+            <h2 className="text-xl text-black font-semibold mb-4">
               Результати користувача: {selectedUserEmail}
             </h2>
 
             {userResults.length === 0 ? (
-              <p className="text-gray-500">Немає результатів тестів</p>
+              <p className="text-black">Немає результатів тестів</p>
             ) : (
               <>
                 <div className="space-y-4">
@@ -183,7 +182,7 @@ const personalRecs = getPersonalRecommendations(
                       key={result.id}
                       className="p-4 border rounded-lg bg-gray-50"
                     >
-                      <div className="flex justify-between mb-2">
+                      <div className="flex justify-between mb-2 text-black">
                         <div>
                           <span className="font-medium">
                             {result.test_title}

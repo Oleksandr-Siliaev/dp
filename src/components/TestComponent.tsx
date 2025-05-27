@@ -189,7 +189,7 @@ export function TestComponent({ test }: { test: TestDetails }) {
         <div className="flex justify-center space-x-48">
           <button 
             onClick={() => window.location.href = '/'}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
           >
             На головну
           </button>
@@ -198,7 +198,7 @@ export function TestComponent({ test }: { test: TestDetails }) {
               localStorage.removeItem(`testProgress_${test.id}`)
               window.location.reload()
             }}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
+            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
           >
             Почати тест знову
           </button>
@@ -231,8 +231,8 @@ export function TestComponent({ test }: { test: TestDetails }) {
             onClick={() => handleAnswer(idx)}
             className={`block w-full p-2 text-left rounded border transition-all ${
               answers[currentQuestion] === idx 
-                ? 'bg-blue-100 border-blue-500 scale-[0.98]' 
-                : 'hover:bg-gray-50 border-transparent'
+                ? 'bg-blue-600 border-blue-600 scale-[0.98]' 
+                : 'hover:bg-gray-600 border-transparent'
             }`}
           >
             {answer.text}
@@ -244,7 +244,7 @@ export function TestComponent({ test }: { test: TestDetails }) {
         {currentQuestion > 0 && (
           <button
             onClick={() => setCurrentQuestion(prev => prev - 1)}
-            className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300 transition-colors"
+            className="bg-gray-500 px-4 py-2 rounded hover:bg-gray-400 transition-colors"
           >
             Назад
           </button>
@@ -252,7 +252,7 @@ export function TestComponent({ test }: { test: TestDetails }) {
         
         <button
           onClick={handleNext}
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors ml-auto"
+          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors ml-auto"
           disabled={loading}
         >
           {loading ? (

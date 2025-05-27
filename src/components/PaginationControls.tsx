@@ -34,7 +34,7 @@ export function PaginationControls({
       {hasPrev && (
         <Link
           href={`?${generateQueryString()}&page=${currentPage - 1}`}
-          className='px-4 py-2 bg-gray-200 rounded hover:bg-gray-300'
+          className='px-4 py-2 bg-gray-500 rounded hover:bg-gray-400'
           onClick={() => onPageChange && onPageChange(currentPage - 1)}
         >
           Назад
@@ -42,13 +42,13 @@ export function PaginationControls({
       )}
 
       <span className='text-sm text-gray-600'>
-        Страница {currentPage} из {totalPages}
+        Сторінка {currentPage} з {totalPages}
       </span>
 
       {hasNext && (
         <Link
           href={`?${generateQueryString()}&page=${currentPage + 1}`}
-          className='px-4 py-2 bg-gray-200 rounded hover:bg-gray-300'
+          className='px-4 py-2 bg-gray-500 rounded hover:bg-gray-400'
           onClick={() => onPageChange && onPageChange(currentPage + 1)}
         >
           Вперед
