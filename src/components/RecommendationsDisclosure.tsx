@@ -1,3 +1,4 @@
+
 // components/RecommendationsDisclosure.tsx
 'use client'
 
@@ -25,7 +26,7 @@ export default function RecommendationsDisclosure({
             className="flex w-full justify-between items-center"
             aria-label={`${open ? 'Скрыть' : 'Показать'} рекомендации`}
           >
-            <h4 className="font-medium white">{title}</h4>
+            <h4 className="font-medium text-white">{title}</h4>
             <ChevronDownIcon
               className={`h-5 w-5 text-white transition-transform duration-200 ${
                 open ? 'rotate-180' : ''

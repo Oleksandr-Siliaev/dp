@@ -19,18 +19,19 @@ export default function TestResultsList({ results }: Props) {
   return (
     <div>
       <div className="mb-6 flex justify-center">
-  <div className="w-full max-w-2xl px-4">
-    <input
-      type="text"
-      placeholder="Пошук по назві тесту..."
-      value={searchQuery}
-      onChange={(e) => setSearchQuery(e.target.value)}
-      className="w-full px-6 py-3 rounded-xl border-2 border-gray-200 
-                focus:outline-none focus:border-blue-500 focus:ring-2 
-                focus:ring-blue-200 transition-all"
-    />
-  </div>
-</div>
+        <div className="w-full max-w-2xl px-4">
+          <input
+            type="text"
+            placeholder="Пошук по назві тесту..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full px-6 py-3 rounded-xl border-2 border-gray-200 
+                      focus:outline-none focus:border-blue-500 focus:ring-2 
+                      focus:ring-blue-200 transition-all"
+          />
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {filteredResults.length === 0 ? (
           <div className="col-span-2 text-center text-gray-500 py-4">
@@ -53,6 +54,7 @@ export default function TestResultsList({ results }: Props) {
                     </p>
                   </div>
                 </div>
+                
                 <div className="flex-1 space-y-4">
                   <div>
                     <h4 className="font-medium text-gray-400 mb-1">
@@ -62,21 +64,30 @@ export default function TestResultsList({ results }: Props) {
                       {result.result_rule.description}
                     </p>
                   </div>
+
                   {result.result_rule.recommendations?.length > 0 && (
                     <RecommendationsDisclosure 
                       recommendations={result.result_rule.recommendations} 
                       title="Результат"
-                      className="bg-blue-50"
+                      className="bg-blue-700"
                     />
                   )}
-                  {result.personalRecommendations && 
-                  result.personalRecommendations.length > 0 && (
-                    <RecommendationsDisclosure 
-                      recommendations={result.personalRecommendations}
-                      title="Персональні рекомендації"
-                      className="bg-blue-600"
-                    />
-                  )}
+
+                  {result.personalRecommendations ? (
+                    result.personalRecommendations.length > 0 ? (
+                      <RecommendationsDisclosure 
+                        recommendations={result.personalRecommendations}
+                        title="Персональні рекомендації"
+                        className="bg-blue-700"
+                      />
+                    ) : (
+                      <div className="mt-4 bg-blue-700 p-3 rounded-lg">
+                        <h4 className="font-medium text-white">
+                          Ви не отримали жодної персональної рекомендації
+                        </h4>
+                      </div>
+                    )
+                  ) : null}
                 </div>
               </div>
             </div>
