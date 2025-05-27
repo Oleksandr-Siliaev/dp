@@ -5,7 +5,7 @@ import { getTestConfig, getResultRule, getPersonalRecommendations } from '@/lib/
 import { PaginationControls } from '@/components/PaginationControls'
 import TestResultsList from '@/components/TestResultsList'
 
-const ITEMS_PER_PAGE = 5
+const ITEMS_PER_PAGE = 10
 
 export default async function ProfilePage({
   searchParams,
