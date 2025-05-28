@@ -5,16 +5,28 @@ import { useState } from 'react'
 import RecommendationsDisclosure from './RecommendationsDisclosure'
 import { TestResult } from '@/types'
 
+const ITEMS_PER_PAGE = 1;
+
 interface Props {
-  results: TestResult[]
+  results: TestResult[],
+  currentPage?: number,
 }
 
-export default function TestResultsList({ results }: Props) {
+export default function TestResultsList({ results, currentPage = 1 }: Props) {
   const [searchQuery, setSearchQuery] = useState('')
 
-  const filteredResults = results.filter(result =>
-    result.test_title.toLowerCase().includes(searchQuery.toLowerCase())
+  let filteredResults = results.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
   )
+  if (!results || results.length === 0) {
+    return <div className="text-center text-gray-500 py-4">Немає результатів</div>
+  }
+  if (searchQuery) {
+    filteredResults = results.filter(result =>
+      result.test_title.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  }
 
   return (
     <div>

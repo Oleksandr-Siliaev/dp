@@ -15,11 +15,6 @@ export function PaginationControls({
   onPageChange,
   searchParams = {},
 }: PaginationControlsProps) {
-  console.log('PaginationControls rendered with:', {
-    currentPage,
-    totalPages,
-    searchParams,
-  });
   const hasPrev = currentPage > 1;
   const hasNext = currentPage < totalPages;
 

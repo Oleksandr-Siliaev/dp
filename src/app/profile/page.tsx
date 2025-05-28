@@ -31,7 +31,7 @@ export default async function ProfilePage({
     .select('id, test_id, score, created_at, selected_answers', { count: 'exact' })
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
-    .range((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE - 1)
+    //.range((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE - 1)
 
   const formattedResults = results?.map(result => ({
     id: result.id,
