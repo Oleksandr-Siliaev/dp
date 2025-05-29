@@ -4,6 +4,7 @@ import anxietyTest from '@/config/tests/anxiety-test.json'
 import panicDisorderTest from '@/config/tests/panic-disorder-test.json'
 import ptsdTest from '@/config/tests/ptsd-test.json'
 import hypomaniaTest from '@/config/tests/hypomania-test.json'
+import suicideRiskTest from '@/config/tests/suicide-risk-test.json'
 import { TESTS } from '@/app/api/tests/data/tests'
 
 type TestRule = {
@@ -30,7 +31,8 @@ const tests: Record<string, TestConfig> = {
   'anxiety-test': anxietyTest,
   'panic-disorder-test': panicDisorderTest,
   'ptsd-test': ptsdTest,
-  'hypomania-test': hypomaniaTest
+  'hypomania-test': hypomaniaTest,
+  'suicide-risk-test': suicideRiskTest
 }
 
 export function getTestConfig(testId: string): TestConfig {
