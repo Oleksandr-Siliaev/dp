@@ -49,7 +49,7 @@ export default async function ProfilePage({
   const totalPages = Math.ceil((count || 0) / ITEMS_PER_PAGE)
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto p-4 text-white">
 
       <div className="mb-8 border-b pb-6 text-center">
         <h1 className="text-2xl font-bold mb-4">Ваш профіль</h1>

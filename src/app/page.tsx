@@ -47,10 +47,10 @@ export default function Home() {
 
   return (
   <div className="container mx-auto p-4">
-    <h1 className="text-3xl font-bold mb-8 text-center">Доступні тести</h1>
+    <h1 className="text-3xl text-white font-bold mb-8 text-center">Доступні тести</h1>
     
 <div className="mb-8 flex justify-center">
-      <div className="w-full max-w-2xl px-4"> 
+      <div className="w-full max-w-2xl px-4" > 
         <input
           type="text"
           placeholder="Пошук по назві тесту..."
@@ -60,8 +60,9 @@ export default function Home() {
             setCurrentPage(1) 
           }}
           className="w-full px-6 py-3 rounded-xl border-2 border-gray-200 
-                     focus:outline-none focus:border-blue-500 focus:ring-2 
-                     focus:ring-blue-200 transition-all"
+                 focus:outline-none focus:border-blue-500 focus:ring-2 
+                 focus:ring-blue-200 transition-all
+                 text-white bg-gray-700 placeholder-white"
         />
       </div>
     </div>

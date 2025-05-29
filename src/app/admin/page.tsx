@@ -131,7 +131,7 @@ const personalRecs = getPersonalRecommendations(
   return (
     <div className="container mx-auto p-4 max-w-6xl">
       <div className="flex justify-between items-start mb-6">
-        <h1 className="text-2xl font-bold">Адмін-панель</h1>
+        <h1 className="text-2xl  text-white font-bold">Адмін-панель</h1>
         <Link
           href="/admin/add-test"
           className="bg-blue-600 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
@@ -159,7 +159,7 @@ const personalRecs = getPersonalRecommendations(
             
             <button
               type="submit"
-              className="absolute right-2 top-2 bg-blue-600 px-1 py-1 rounded"
+              className="absolute right-2 top-2 bg-blue-600 px-1 py-1 rounded text-white"
             >
               Знайти
             </button>

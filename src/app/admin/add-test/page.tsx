@@ -127,7 +127,7 @@ export default function AddTestPage() {
   }
 
   return (
-    <div className="container mx-auto p-4 max-w-4xl">
+    <div className="container mx-auto p-4 max-w-4xl text-white">
       <h1 className="text-2xl font-bold mb-6">Додати новий тест</h1>
       
       {error && <div className="mb-4 p-3 bg-red-100 text-red-600 rounded">{error}</div>}
