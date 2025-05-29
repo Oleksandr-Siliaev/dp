@@ -32,7 +32,7 @@ export default async function ProfilePage({
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
     //.range((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE - 1)
-
+    //console.log(results)
   const formattedResults = results?.map(result => ({
     id: result.id,
     test_id: result.test_id,
@@ -47,7 +47,7 @@ export default async function ProfilePage({
   })) || []
 
   const totalPages = Math.ceil((count || 0) / ITEMS_PER_PAGE)
-
+  console.log(formattedResults)
   return (
     <div className="container mx-auto p-4 text-white">
 

@@ -5,7 +5,7 @@ import { useState } from 'react'
 import RecommendationsDisclosure from './RecommendationsDisclosure'
 import { TestResult } from '@/types'
 
-const ITEMS_PER_PAGE = 1;
+const ITEMS_PER_PAGE = 10;
 
 interface Props {
   results: TestResult[],
