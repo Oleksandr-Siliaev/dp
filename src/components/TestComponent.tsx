@@ -151,7 +151,7 @@ export function TestComponent({ test }: { test: TestDetails }) {
 
     return (
       <div className="flex justify-center items-start min-h-screen pt-8">
-    <div className="w-full max-w-3xl mx-4  border rounded-xl shadow-sm p-6">
+    <div className="w-full max-w-3xl mx-4  border border-white rounded-xl shadow-sm p-6">
       <h2 className="text-2xl font-bold mb-6 text-center text-white">Результат тесту</h2>
         
         <div className="mb-6">
