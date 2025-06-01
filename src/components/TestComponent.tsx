@@ -220,7 +220,7 @@ export function TestComponent({ test }: { test: TestDetails }) {
       )}
 
       <div className="space-y-6">
-        <h3 className="text-2xl font-semibold text-center">
+        <h3 className="text-2xl font-semibold text-center text-white">
           {test.questions[currentQuestion].text}
         </h3>
 
@@ -230,7 +230,7 @@ export function TestComponent({ test }: { test: TestDetails }) {
               key={answer.id}
               onClick={() => handleAnswer(idx)}
               className={`
-                p-4 text-left rounded-lg border transition-all
+                p-4 text-left rounded-lg border transition-all text-white
                 ${answers[currentQuestion] === idx 
                   ? 'bg-blue-600 border-blue-500 scale-[0.98]' 
                   : 'hover:bg-gray-600 border-gray-200'}
