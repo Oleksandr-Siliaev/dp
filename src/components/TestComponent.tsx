@@ -152,14 +152,14 @@ export function TestComponent({ test }: { test: TestDetails }) {
     return (
       <div className="flex justify-center items-start min-h-screen pt-8">
     <div className="w-full max-w-3xl mx-4  border rounded-xl shadow-sm p-6">
-      <h2 className="text-2xl font-bold mb-6 text-center">Результат тесту</h2>
+      <h2 className="text-2xl font-bold mb-6 text-center text-white">Результат тесту</h2>
         
         <div className="mb-6">
-          <h3 className="text-lg text-center font-semibold">{result.rule.title}</h3>
+          <h3 className="text-lg text-center font-semibold text-white">{result.rule.title}</h3>
           <p className="mt-2 text-center text-gray-500">{result.rule.description}</p>
           {result.rule.recommendations?.length > 0 && (
             <div className="mt-4 text-left max-w-md mx-auto">
-              <h4 className="font-medium mb-2">Загальний результат:</h4>
+              <h4 className="font-medium mb-2 text-white">Загальний результат:</h4>
               <ul className="list-disc pl-5 space-y-1">
                 {result.rule.recommendations.map((rec, i) => (
                   <li key={i} className="text-sm text-white">{rec}</li>
