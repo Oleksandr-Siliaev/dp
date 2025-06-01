@@ -4,7 +4,7 @@ import { TestSummary } from '@/types'
 
 export function TestCard({ test }: { test: TestSummary }) {
   return (
-    <div className="h-full border p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
+    <div className="h-full border border-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow">
       <h2 className="text-xl font-semibold mb-3 text-white">{test.title}</h2>
       <p className="text-gray-600 mb-4 line-clamp-3">{test.description}</p>
       <div className="flex justify-between items-end">
